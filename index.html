@@ -1,0 +1,4681 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Salero basamo - Rumah makan</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Reset & Base Styles */
+    * { 
+      box-sizing: border-box; 
+      transition: background 0.4s, color 0.4s; 
+      margin: 0;
+      padding: 0;
+    }
+    
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      margin: 0; 
+      background: #f5f7fa; 
+      color: #333; 
+      display: flex; 
+      overflow-x: hidden;
+    }
+    
+    a { 
+      color: inherit; 
+      text-decoration: none; 
+    }
+
+    /* Login Page Styles */
+    .login-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('restoran.jpg');
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    
+    .login-box {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      width: 400px;
+      max-width: 90%;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .login-header h1 {
+      color: #800000;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    
+    .login-header p {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .login-form .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .login-form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .login-form input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .login-form input:focus {
+      outline: none;
+      border-color: #800000;
+      box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.2);
+    }
+    
+    .login-form .btn {
+      width: 100%;
+      padding: 14px;
+      background: #800000;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .login-form .btn:hover {
+      background: #a00000;
+    }
+    
+    .login-error {
+      color: #d32f2f;
+      background: #ffebee;
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+      text-align: center;
+    }
+    
+    .login-footer {
+      text-align: center;
+      margin-top: 25px;
+      color: #777;
+      font-size: 14px;
+    }
+    
+    /* Sidebar Styles */
+    .sidebar { 
+      width: 260px; 
+      background-color: #800000; 
+      color: #fff; 
+      position: fixed; 
+      top: 0; 
+      bottom: 0; 
+      left: 0; 
+      overflow-y: auto; 
+      transition: transform 0.3s ease, background 0.4s, color 0.4s; 
+      z-index: 1000; 
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar.hide { 
+      transform: translateX(-100%); 
+    }
+    
+    .sidebar h2 { 
+      text-align: center; 
+      margin: 25px 0; 
+      font-size: 20px; 
+      font-weight: 600; 
+      color: #FFD700; 
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+    
+    .sidebar ul { 
+      list-style: none; 
+      padding: 0; 
+      margin: 0 0 30px 0; 
+    }
+    
+    .sidebar ul li { 
+      padding: 14px 20px; 
+      cursor: pointer; 
+      transition: all 0.3s; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      border-left: 3px solid transparent;
+    }
+    
+    .sidebar ul li:hover { 
+      background: rgba(255,255,255,0.1); 
+      border-left-color: #FFD700;
+      padding-left: 25px;
+    }
+    
+    .sidebar ul li i {
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Dark Mode Sidebar */
+    body.dark .sidebar { 
+      background: #1f1f1f; 
+      color: #FFD700; 
+    }
+    
+    body.dark .sidebar ul li:hover { 
+      background: rgba(255,255,255,0.1); 
+    }
+
+    /* Main Content Styles */
+    .main-content { 
+      flex: 1; 
+      margin-left: 260px; 
+      transition: margin-left 0.3s ease, background 0.4s, color 0.4s; 
+      min-height: 100vh;
+    }
+    
+    .main-content.full { 
+      margin-left: 0; 
+    }
+    
+    /* Header Styles */
+    header { 
+      background-color: #800000; 
+      color: white; 
+      padding: 18px 25px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      position: sticky; 
+      top: 0; 
+      z-index: 999; 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    header h1 { 
+      margin: 0; 
+      font-weight: 600; 
+      font-size: 24px; 
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .user-info { 
+      font-size: 15px; 
+      display:flex; 
+      align-items:center; 
+      gap:20px; 
+      position:relative; 
+    }
+
+    /* Toggle Button */
+    .toggle-btn { 
+      background: none; 
+      border: none; 
+      color: white; 
+      font-size: 22px; 
+      cursor: pointer; 
+      padding: 5px;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+    
+    .toggle-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* Container Styles */
+    .container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      padding: 25px; 
+    }
+
+    /* Stats Styles */
+    .stats { 
+      display: flex; 
+      gap: 20px; 
+      margin: 25px 0; 
+      flex-wrap: wrap; 
+    }
+    
+    .stat-box { 
+      flex: 1; 
+      min-width: 200px; 
+      background: white; 
+      border-radius: 12px; 
+      padding: 25px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+      text-align: center; 
+      transition: all 0.4s, color 0.4s, box-shadow 0.4s; 
+      position: relative; 
+      overflow: hidden; 
+    }
+    
+    .stat-box::before { 
+      content: ''; 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      width: 6px; 
+      height: 100%; 
+      background: #800000; 
+      border-radius: 12px 0 0 12px;
+    }
+    
+    .stat-box .icon { 
+      font-size: 36px; 
+      margin-bottom: 15px; 
+      color: #800000; 
+    }
+    
+    .stat-box .number { 
+      font-size: 32px; 
+      font-weight: 700; 
+      margin-bottom: 8px; 
+    }
+    
+    .stat-box .label { 
+      font-size: 15px; 
+      color: #666; 
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .stat-box .trend { 
+      position: absolute; 
+      top: 15px; 
+      right: 15px; 
+      font-size: 13px; 
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .stat-box .trend.up { 
+      color: #2e7d32; 
+    }
+    
+    .stat-box .trend.down { 
+      color: #d32f2f; 
+    }
+
+    /* Menu Section Styles */
+    .menu-section { 
+      background: white; 
+      padding: 25px; 
+      border-radius: 12px; 
+      margin-bottom: 25px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+      transition: all 0.4s, color 0.4s, box-shadow 0.4s; 
+    }
+    
+    .menu-list h2 { 
+      margin-top: 0; 
+      margin-bottom: 20px; 
+      color: #800000; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      font-size: 20px;
+    }
+    
+    .menu-item { 
+      display: flex; 
+      background: #fefefe; 
+      margin-bottom: 18px; 
+      padding: 15px; 
+      border-radius: 10px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
+      transition: all 0.3s ease; 
+      border-left: 4px solid #f0f0f0;
+    }
+    
+    .menu-item:hover { 
+      transform: translateY(-3px); 
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1); 
+      border-left-color: #800000;
+    }
+    
+    .menu-item img { 
+      width: 100px; 
+      height: 80px; 
+      object-fit: cover; 
+      border-radius: 8px; 
+      margin-right: 18px; 
+      flex-shrink: 0; 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    
+    .menu-details { 
+      flex-grow: 1; 
+    }
+    
+    .menu-name { 
+      font-weight: 600; 
+      margin-bottom: 8px; 
+      font-size: 18px; 
+      color: #333;
+    }
+    
+    .menu-desc { 
+      font-size: 14px; 
+      color: #666; 
+      margin-bottom: 8px; 
+      line-height: 1.4;
+    }
+    
+    .menu-price { 
+      font-weight: 700; 
+      color: #2e7d32; 
+      font-size: 16px;
+    }
+    
+    .menu-qty { 
+      font-size: 13px; 
+      color: #800000; 
+      background: #f9f2f2; 
+      padding: 4px 10px; 
+      border-radius: 20px; 
+      display: inline-block; 
+      margin-top: 8px; 
+    }
+
+    /* Pages Styles */
+    .page { 
+      display: none; 
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .page.active { 
+      display: block; 
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* About Section Styles */
+    .about { 
+      background: white; 
+      padding: 25px; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+      transition: all 0.4s, color 0.4s, box-shadow 0.4s; 
+    }
+    
+    .about h2 { 
+      color: #800000; 
+      margin-top: 0; 
+      font-size: 22px;
+    }
+    
+    .about img { 
+      max-width: 400px; 
+      width: 100%; 
+      border-radius: 10px; 
+      margin: 20px 0; 
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    /* Pesanan Terakhir Styles */
+    .filter-bar { 
+      margin: 25px 0; 
+      display: flex; 
+      gap: 12px; 
+    }
+    
+    .filter-btn { 
+      padding: 10px 18px; 
+      border: none; 
+      border-radius: 8px; 
+      background: #800000; 
+      color: #FFD700; 
+      font-weight: 600; 
+      cursor: pointer; 
+      transition: all 0.3s; 
+      font-size: 14px;
+    }
+    
+    .filter-btn:hover { 
+      background: #FFD700; 
+      color: #800000; 
+      transform: translateY(-2px);
+    }
+    
+    .pesanan-item { 
+      background: #fff; 
+      border-left: 5px solid #800000; 
+      padding: 18px; 
+      margin-bottom: 15px; 
+      border-radius: 10px; 
+      box-shadow: 0 3px 10px rgba(0,0,0,0.06); 
+      opacity: 0; 
+      max-height: 0; 
+      overflow: hidden; 
+      transform: translateY(-10px); 
+      transition: all 0.5s ease; 
+    }
+    
+    .pesanan-item.show { 
+      opacity: 1; 
+      max-height: 200px; 
+      transform: translateY(0); 
+    }
+    
+    .pesanan-item strong { 
+      color: #800000; 
+    }
+    
+    .pesanan-item .pesanan-header { 
+      display: flex; 
+      justify-content: space-between; 
+      margin-bottom: 10px; 
+    }
+    
+    .pesanan-item .pesanan-header .nama { 
+      font-weight: 600; 
+      font-size: 16px;
+    }
+    
+    .pesanan-item .pesanan-header .tanggal { 
+      font-size: 13px; 
+      color: #777; 
+    }
+    
+    .pesanan-item .pesanan-content { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+    }
+    
+    .pesanan-item .pesanan-content .menu { 
+      flex: 1; 
+      font-size: 15px;
+    }
+    
+    .pesanan-item .pesanan-content .total { 
+      font-weight: 700; 
+      color: #2e7d32; 
+      font-size: 16px;
+    }
+
+    /* Monitoring Restoran Styles */
+    #monitoring h2, #monitoring h3 { 
+      color: #800000; 
+      margin-bottom: 15px;
+    }
+    
+    #statusMeja .meja-item { 
+      margin-bottom: 12px; 
+      padding:15px; 
+      border-radius:8px; 
+      background:white; 
+      box-shadow:0 3px 8px rgba(0,0,0,0.05); 
+      transition: all 0.3s;
+    }
+    
+    #statusMeja .meja-item.available { 
+      border-left: 6px solid #2e7d32; 
+      color: #2e7d32; 
+    }
+    
+    #statusMeja .meja-item.occupied { 
+      border-left: 6px solid #d32f2f; 
+      color: #d32f2f; 
+    }
+    
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      margin-top: 15px; 
+      background: #fff; 
+      border-radius: 10px; 
+      overflow: hidden; 
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05); 
+      transition: all 0.4s, color 0.4s; 
+    }
+    
+    table th, table td { 
+      padding: 14px; 
+      border: 1px solid #eee; 
+      text-align: left; 
+      vertical-align: middle; 
+      transition: all 0.4s, color 0.4s; 
+    }
+    
+    table th { 
+      background: #800000; 
+      color: #fff; 
+      text-align: center; 
+      font-weight: 600; 
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-paid { 
+      color: #fff; 
+      padding: 6px 12px; 
+      border-radius: 20px; 
+      font-weight: 600; 
+      display:inline-block; 
+      font-size: 13px;
+    }
+    
+    .badge-paid.yes { 
+      background: #2e7d32; 
+    }
+    
+    .badge-paid.no { 
+      background: #d32f2f; 
+    }
+    
+    .metode-chip { 
+      font-size: 14px; 
+      padding: 5px 12px; 
+      border-radius: 20px; 
+      background:#f0f0f0; 
+      display:inline-block; 
+      transition: all 0.4s, color 0.4s; 
+    }
+
+    /* Dark Mode Styles */
+    body.dark { 
+      background:#121212; 
+      color:#eee; 
+    }
+    
+    body.dark .main-content { 
+      background:#121212; 
+      color:#eee; 
+    }
+    
+    body.dark .stat-box { 
+      background:#1f1f1f; 
+      color:#fff; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+    }
+    
+    body.dark .menu-section, body.dark .about { 
+      background:#1f1f1f; 
+      color:#fff; 
+      box-shadow:0 4px 15px rgba(0,0,0,0.3); 
+    }
+    
+    body.dark .menu-item { 
+      background:#2b2b2b; 
+      color:#fff; 
+      box-shadow:0 3px 10px rgba(0,0,0,0.5); 
+    }
+    
+    body.dark .pesanan-item { 
+      background:#2b2b2b; 
+      color:#fff; 
+      border-left: 5px solid #FFD700; 
+    }
+    
+    body.dark table { 
+      background:#2b2b2b; 
+      color:#fff; 
+    }
+    
+    body.dark table th { 
+      background:#333; 
+    }
+    
+    body.dark table td { 
+      background:#2b2b2b; 
+      color:#fff; 
+    }
+    
+    body.dark .metode-chip { 
+      background:#333; 
+      color:#fff; 
+    }
+    
+    /* Chart Container Styles */
+    .chart-container { 
+      background: white; 
+      padding: 25px; 
+      border-radius: 12px; 
+      margin-bottom: 25px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+    }
+    
+    .chart-container h3 { 
+      margin-top: 0; 
+      color: #800000; 
+      font-size: 18px;
+    }
+    
+    /* Dashboard Section Styles */
+    .dashboard-section { 
+      background: white; 
+      border-radius: 12px; 
+      padding: 25px; 
+      margin-bottom: 25px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+    }
+    
+    .dashboard-section h2 { 
+      color: #800000; 
+      margin-top: 0; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      font-size: 20px;
+    }
+    
+    /* Activity Timeline Styles */
+    .activity-item { 
+      display: flex; 
+      align-items: flex-start; 
+      margin-bottom: 18px; 
+      padding-bottom: 18px; 
+      border-bottom: 1px solid #eee; 
+      transition: all 0.3s;
+    }
+    
+    .activity-item:last-child { 
+      border-bottom: none; 
+    }
+    
+    .activity-item:hover {
+      transform: translateX(5px);
+    }
+    
+    .activity-icon { 
+      width: 42px; 
+      height: 42px; 
+      border-radius: 50%; 
+      background: #f5f5f5; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      margin-right: 18px; 
+      flex-shrink: 0; 
+      transition: all 0.3s;
+    }
+    
+    .activity-item:hover .activity-icon {
+      background: #f0f0f0;
+      transform: scale(1.05);
+    }
+    
+    .activity-icon i { 
+      color: #800000; 
+      font-size: 18px;
+    }
+    
+    .activity-content { 
+      flex: 1; 
+    }
+    
+    .activity-title { 
+      font-weight: 600; 
+      margin-bottom: 6px; 
+      font-size: 16px;
+    }
+    
+    .activity-time { 
+      font-size: 13px; 
+      color: #777; 
+    }
+
+    /* Pesanan Baru Styles */
+    .pesanan-container { 
+      display: flex; 
+      gap: 25px; 
+      flex-wrap: wrap; 
+    }
+    
+    .pesanan-form { 
+      flex: 1; 
+      min-width: 350px; 
+      background: white; 
+      padding: 25px; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+    }
+    
+    .keranjang-container { 
+      flex: 1; 
+      min-width: 350px; 
+      background: white; 
+      padding: 25px; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+    }
+    
+    .form-group { 
+      margin-bottom: 18px; 
+    }
+    
+    .form-group label { 
+      display: block; 
+      margin-bottom: 8px; 
+      font-weight: 600; 
+      color: #800000; 
+      font-size: 15px;
+    }
+    
+    .form-group input, .form-group select { 
+      width: 100%; 
+      padding: 12px 15px; 
+      border: 1px solid #ddd; 
+      border-radius: 8px; 
+      font-size: 15px; 
+      transition: all 0.3s;
+    }
+    
+    .form-group input:focus, .form-group select:focus { 
+      outline: none; 
+      border-color: #800000; 
+      box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.2); 
+    }
+    
+    .btn { 
+      padding: 12px 18px; 
+      border: none; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-weight: 600; 
+      transition: all 0.3s; 
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-primary { 
+      background: #800000; 
+      color: #FFD700; 
+    }
+    
+    .btn-primary:hover { 
+      background: #a00000; 
+      transform: translateY(-2px);
+    }
+    
+    .btn-success { 
+      background: #2e7d32; 
+      color: white; 
+    }
+    
+    .btn-success:hover { 
+      background: #388e3c; 
+      transform: translateY(-2px);
+    }
+    
+    .btn-danger { 
+      background: #d32f2f; 
+      color: white; 
+    }
+    
+    .btn-danger:hover { 
+      background: #e53935; 
+      transform: translateY(-2px);
+    }
+    
+    .btn-info { 
+      background: #0288d1; 
+      color: white; 
+    }
+    
+    .btn-info:hover { 
+      background: #039be5; 
+      transform: translateY(-2px);
+    }
+    
+    .btn-block { 
+      width: 100%; 
+    }
+    
+    .keranjang-item { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 15px; 
+      border-bottom: 1px solid #eee; 
+      transition: all 0.3s;
+    }
+    
+    .keranjang-item:last-child { 
+      border-bottom: none; 
+    }
+    
+    .keranjang-item:hover {
+      background: #f9f9f9;
+    }
+    
+    .keranjang-total { 
+      font-weight: 700; 
+      font-size: 20px; 
+      margin-top: 20px; 
+      text-align: right; 
+      color: #800000; 
+    }
+    
+    .payment-methods { 
+      display: grid; 
+      grid-template-columns: repeat(2, 1fr); 
+      gap: 15px; 
+      margin-top: 20px; 
+    }
+    
+    .payment-method { 
+      padding: 20px; 
+      border: 2px solid #eee; 
+      border-radius: 10px; 
+      text-align: center; 
+      cursor: pointer; 
+      transition: all 0.3s; 
+      background: white;
+    }
+    
+    .payment-method:hover { 
+      border-color: #800000; 
+      background: #f9f2f2; 
+      transform: translateY(-3px);
+    }
+    
+    .payment-method.selected { 
+      border-color: #800000; 
+      background: #f9f2f2; 
+      box-shadow: 0 4px 10px rgba(128, 0, 0, 0.1);
+    }
+    
+    .payment-method i { 
+      font-size: 28px; 
+      color: #800000; 
+      margin-bottom: 10px; 
+    }
+    
+    .payment-method-title { 
+      font-weight: 600; 
+      font-size: 16px;
+    }
+    
+    .empty-state { 
+      text-align: center; 
+      padding: 40px 20px; 
+      color: #777; 
+    }
+    
+    .empty-state i { 
+      font-size: 48px; 
+      color: #ddd; 
+      margin-bottom: 15px; 
+    }
+    
+    .empty-state p { 
+      font-size: 16px;
+    }
+    
+    /* Modal Styles */
+    .modal { 
+      display: none; 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: rgba(0,0,0,0.6); 
+      z-index: 1000; 
+      align-items: center; 
+      justify-content: center; 
+      backdrop-filter: blur(3px);
+    }
+    
+    .modal-content { 
+      background: white; 
+      padding: 25px; 
+      border-radius: 12px; 
+      width: 90%; 
+      max-width: 550px; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      animation: modalSlideIn 0.3s ease;
+    }
+    
+    @keyframes modalSlideIn {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .modal-header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 20px; 
+      padding-bottom: 15px; 
+      border-bottom: 1px solid #eee;
+    }
+    
+    .modal-header h3 { 
+      margin: 0; 
+      color: #800000; 
+      font-size: 20px;
+    }
+    
+    .modal-close { 
+      cursor: pointer; 
+      font-size: 22px; 
+      color: #777; 
+      transition: all 0.3s;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    
+    .modal-close:hover { 
+      background: #f0f0f0; 
+      color: #333;
+    }
+    
+    .modal-body { 
+      margin-bottom: 25px; 
+    }
+    
+    .modal-footer { 
+      display: flex; 
+      justify-content: flex-end; 
+      gap: 12px; 
+    }
+
+    /* Struk Pembayaran Styles */
+    .struk-container { 
+      background: white; 
+      padding: 25px; 
+      border-radius: 12px; 
+      width: 90%; 
+      max-width: 420px; 
+      box-shadow: 0 0 25px rgba(0,0,0,0.25); 
+      font-family: 'Courier New', monospace; 
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .struk-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: repeating-linear-gradient(
+        45deg,
+        #800000,
+        #800000 10px,
+        #FFD700 10px,
+        #FFD700 20px
+      );
+    }
+    
+    .struk-header { 
+      text-align: center; 
+      border-bottom: 1px dashed #ccc; 
+      padding-bottom: 15px; 
+      margin-bottom: 20px; 
+    }
+    
+    .struk-header h2 { 
+      margin: 0 0 5px 0; 
+      color: #800000; 
+      font-size: 22px; 
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .struk-header p { 
+      margin: 3px 0; 
+      font-size: 12px; 
+      color: #555; 
+    }
+    
+    .struk-info { 
+      display: flex; 
+      justify-content: space-between; 
+      margin-bottom: 8px; 
+      font-size: 13px; 
+    }
+    
+    .struk-items { 
+      margin: 20px 0; 
+    }
+    
+    .struk-item { 
+      display: flex; 
+      justify-content: space-between; 
+      margin-bottom: 10px; 
+      font-size: 13px; 
+    }
+    
+    .struk-item-name { 
+      flex: 2; 
+    }
+    
+    .struk-item-qty { 
+      flex: 1; 
+      text-align: center; 
+    }
+    
+    .struk-item-price { 
+      flex: 1; 
+      text-align: right; 
+    }
+    
+    .struk-total { 
+      border-top: 1px dashed #ccc; 
+      padding-top: 12px; 
+      margin-top: 12px; 
+    }
+    
+    .struk-total-row { 
+      display: flex; 
+      justify-content: space-between; 
+      margin-bottom: 6px; 
+      font-size: 13px; 
+    }
+    
+    .struk-grand-total { 
+      display: flex; 
+      justify-content: space-between; 
+      font-weight: bold; 
+      font-size: 16px; 
+      margin-top: 12px; 
+      padding-top: 8px; 
+      border-top: 1px dashed #ccc; 
+      color: #800000;
+    }
+    
+    .struk-payment { 
+      margin-top: 18px; 
+      padding-top: 12px; 
+      border-top: 1px dashed #ccc; 
+      font-size: 13px; 
+    }
+    
+    .struk-footer { 
+      text-align: center; 
+      margin-top: 25px; 
+      font-size: 11px; 
+      color: #777; 
+      padding-top: 15px; 
+      border-top: 1px dashed #ccc;
+    }
+    
+    .struk-qrcode { 
+      text-align: center; 
+      margin: 20px 0; 
+    }
+    
+    .struk-qrcode img { 
+      width: 100px; 
+      height: 100px; 
+      border: 1px solid #eee; 
+      border-radius: 8px;
+    }
+    
+    .struk-actions { 
+      display: flex; 
+      gap: 12px; 
+      margin-top: 25px;
+      justify-content: center;
+    }
+    
+    .struk-close-btn {
+      background: #800000;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 16px;
+    }
+    
+    .struk-close-btn:hover {
+      background: #a00000;
+      transform: translateY(-2px);
+    }
+    
+    /* Tentang Resto Styles */
+    .sop-section { 
+      background: white; 
+      border-radius: 12px; 
+      padding: 30px; 
+      margin-bottom: 30px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+      position: relative; 
+      overflow: hidden; 
+    }
+    
+    .sop-section::before { 
+      content: ''; 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      width: 10px; 
+      height: 100%; 
+      background: #800000; 
+    }
+    
+    .sop-section h2 { 
+      color: #800000; 
+      margin-top: 0; 
+      margin-bottom: 25px; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      font-size: 22px;
+    }
+    
+    .sop-list { 
+      list-style: none; 
+      padding: 0; 
+      margin: 0; 
+    }
+    
+    .sop-list li { 
+      padding: 15px 0 15px 25px; 
+      position: relative; 
+      border-bottom: 1px solid #f0f0f0; 
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    
+    .sop-list li:last-child { 
+      border-bottom: none; 
+    }
+    
+    .sop-list li::before { 
+      content: '\f058'; 
+      font-family: 'Font Awesome 6 Free'; 
+      font-weight: 900; 
+      position: absolute; 
+      left: 0; 
+      top: 15px; 
+      color: #800000; 
+    }
+    
+    .sop-list li strong { 
+      color: #800000; 
+    }
+    
+    .resto-info { 
+      background: white; 
+      border-radius: 12px; 
+      padding: 30px; 
+      margin-bottom: 30px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+    }
+    
+    .resto-info h2 { 
+      color: #800000; 
+      margin-top: 0; 
+      margin-bottom: 25px; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      font-size: 22px;
+    }
+    
+    .resto-info-content { 
+      display: flex; 
+      gap: 40px; 
+      flex-wrap: wrap; 
+    }
+    
+    .resto-info-text { 
+      flex: 2; 
+      min-width: 300px; 
+    }
+    
+    .resto-info-image { 
+      flex: 1; 
+      min-width: 280px; 
+    }
+    
+    .resto-info-image img { 
+      width: 100%; 
+      border-radius: 12px; 
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    
+    .resto-description { 
+      margin-bottom: 25px; 
+      line-height: 1.7; 
+      font-size: 16px; 
+      color: #444;
+    }
+    
+    .resto-features { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 15px; 
+      margin: 25px 0; 
+    }
+    
+    .feature-item { 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      background: #f9f2f2; 
+      padding: 12px 18px; 
+      border-radius: 30px; 
+      transition: all 0.3s;
+    }
+    
+    .feature-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(128, 0, 0, 0.1);
+    }
+    
+    .feature-item i { 
+      color: #800000; 
+      font-size: 18px;
+    }
+    
+    .contact-section { 
+      background: white; 
+      border-radius: 12px; 
+      padding: 30px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+    }
+    
+    .contact-section h2 { 
+      color: #800000; 
+      margin-top: 0; 
+      margin-bottom: 25px; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      font-size: 22px;
+    }
+    
+    .contact-info { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 25px; 
+      margin-bottom: 30px; 
+    }
+    
+    .contact-item { 
+      display: flex; 
+      align-items: flex-start; 
+      gap: 15px; 
+      flex: 1; 
+      min-width: 250px; 
+      padding: 15px; 
+      border-radius: 10px; 
+      transition: all 0.3s;
+    }
+    
+    .contact-item:hover {
+      background: #f9f9f9;
+    }
+    
+    .contact-item i { 
+      font-size: 24px; 
+      color: #800000; 
+      width: 30px; 
+      text-align: center; 
+      margin-top: 2px;
+    }
+    
+    .contact-item div strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+    
+    .contact-item div p {
+      margin: 0;
+      font-size: 15px;
+      color: #555;
+    }
+    
+    .map-container { 
+      margin-top: 25px; 
+      border-radius: 12px; 
+      overflow: hidden; 
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .map-container iframe { 
+      width: 100%; 
+      height: 400px; 
+      border: none; 
+    }
+    
+    /* Menu Makanan & Minuman Styles */
+    .menu-tabs { 
+      display: flex; 
+      margin-bottom: 25px; 
+      border-bottom: 2px solid #eee; 
+    }
+    
+    .menu-tab { 
+      padding: 15px 25px; 
+      cursor: pointer; 
+      font-weight: 600; 
+      color: #666; 
+      border-bottom: 3px solid transparent; 
+      transition: all 0.3s; 
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .menu-tab.active { 
+      color: #800000; 
+      border-bottom-color: #800000; 
+    }
+    
+    .menu-tab:hover {
+      color: #800000;
+    }
+    
+    .menu-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+      gap: 25px; 
+    }
+    
+    .menu-card { 
+      background: white; 
+      border-radius: 12px; 
+      overflow: hidden; 
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08); 
+      transition: all 0.4s ease; 
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .menu-card:hover { 
+      transform: translateY(-8px); 
+      box-shadow: 0 12px 25px rgba(0,0,0,0.15); 
+    }
+    
+    .menu-card-image { 
+      height: 200px; 
+      overflow: hidden; 
+      position: relative; 
+    }
+    
+    .menu-card-image img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      transition: transform 0.6s ease; 
+    }
+    
+    .menu-card:hover .menu-card-image img { 
+      transform: scale(1.08); 
+    }
+    
+    .menu-badge { 
+      position: absolute; 
+      top: 15px; 
+      right: 15px; 
+      background: #800000; 
+      color: white; 
+      padding: 6px 12px; 
+      border-radius: 6px; 
+      font-size: 13px; 
+      font-weight: 600; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    
+    .menu-card-content { 
+      padding: 20px; 
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .menu-card-name { 
+      font-weight: 700; 
+      font-size: 18px; 
+      margin-bottom: 10px; 
+      color: #333;
+    }
+    
+    .menu-card-desc { 
+      font-size: 14px; 
+      color: #666; 
+      margin-bottom: 15px; 
+      line-height: 1.5; 
+      flex-grow: 1;
+    }
+    
+    .menu-card-footer { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-top: auto;
+    }
+    
+    .menu-card-price { 
+      font-weight: 700; 
+      color: #2e7d32; 
+      font-size: 18px;
+    }
+    
+    .menu-card-action { 
+      background: #800000; 
+      color: white; 
+      border: none; 
+      padding: 8px 15px; 
+      border-radius: 6px; 
+      font-size: 14px; 
+      cursor: pointer; 
+      transition: all 0.3s; 
+      font-weight: 600;
+    }
+    
+    .menu-card-action:hover { 
+      background: #a00000; 
+      transform: translateY(-2px);
+    }
+    
+    .menu-search { 
+      margin-bottom: 25px; 
+      position: relative; 
+    }
+    
+    .menu-search input { 
+      width: 100%; 
+      padding: 15px 50px 15px 20px; 
+      border: 1px solid #ddd; 
+      border-radius: 50px; 
+      font-size: 15px; 
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    }
+    
+    .menu-search input:focus {
+      outline: none;
+      border-color: #800000;
+      box-shadow: 0 3px 15px rgba(128, 0, 0, 0.1);
+    }
+    
+    .menu-search i { 
+      position: absolute; 
+      right: 20px; 
+      top: 50%; 
+      transform: translateY(-50%); 
+      color: #777; 
+      font-size: 18px;
+    }
+    
+    /* Notifikasi Styles - Enhanced */
+    .notification-panel { 
+      position: relative; 
+    }
+    
+    .notification-bell { 
+      position: relative; 
+      cursor: pointer; 
+      display: flex; 
+      align-items: center; 
+    }
+    
+    .notification-bell i { 
+      font-size: 22px; 
+      color: white; 
+    }
+    
+    .notification-badge { 
+      position: absolute; 
+      top: -10px; 
+      right: -10px; 
+      background: #FF4757; 
+      color: white; 
+      font-size: 12px; 
+      font-weight: bold; 
+      width: 24px; 
+      height: 24px; 
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3); 
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+    }
+    
+    .notification-dropdown { 
+      position: absolute; 
+      top: 50px; 
+      right: 0; 
+      background: white; 
+      border-radius: 12px; 
+      width: 360px; 
+      max-height: 450px; 
+      overflow-y: auto; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+      z-index: 1001; 
+      display: none; 
+      animation: dropdownSlide 0.3s ease;
+    }
+    
+    @keyframes dropdownSlide {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .notification-dropdown.active { 
+      display: block; 
+    }
+    
+    .notification-header { 
+      padding: 18px 22px; 
+      border-bottom: 1px solid #f0f0f0; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      background: #f9f9f9;
+      border-radius: 12px 12px 0 0;
+    }
+    
+    .notification-header h3 { 
+      margin: 0; 
+      color: #800000; 
+      font-size: 17px;
+    }
+    
+    .notification-header .clear-all { 
+      font-size: 13px; 
+      color: #800000; 
+      cursor: pointer; 
+      font-weight: 600;
+    }
+    
+    .notification-header .clear-all:hover {
+      text-decoration: underline;
+    }
+    
+    .notification-list { 
+      padding: 10px 0; 
+    }
+    
+    .notification-item { 
+      padding: 18px 22px; 
+      display: flex; 
+      transition: all 0.3s ease; 
+      position: relative; 
+      cursor: pointer;
+    }
+    
+    .notification-item:hover { 
+      background: #f9f2f2; 
+    }
+    
+    .notification-item.unread { 
+      background: #fff9f9; 
+      border-left: 4px solid #800000; 
+    }
+    
+    .notification-item.unread::after { 
+      content: ''; 
+      position: absolute; 
+      left: 0; 
+      top: 0; 
+      width: 4px; 
+      height: 100%; 
+      background: #800000; 
+    }
+    
+    .notification-icon { 
+      width: 44px; 
+      height: 44px; 
+      border-radius: 50%; 
+      background: #f5f5f5; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      margin-right: 18px; 
+      flex-shrink: 0; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .notification-icon i { 
+      font-size: 20px; 
+      color: #800000; 
+    }
+    
+    .notification-content { 
+      flex: 1; 
+      padding-right: 30px;
+    }
+    
+    .notification-title { 
+      font-weight: 600; 
+      margin-bottom: 6px; 
+      color: #333; 
+      font-size: 15px;
+    }
+    
+    .notification-message { 
+      font-size: 14px; 
+      color: #666; 
+      line-height: 1.4; 
+    }
+    
+    .notification-time { 
+      font-size: 12px; 
+      color: #999; 
+      margin-top: 8px; 
+    }
+    
+    .notification-close { 
+      position: absolute; 
+      top: 15px; 
+      right: 15px; 
+      width: 28px; 
+      height: 28px; 
+      border-radius: 50%; 
+      background: #f0f0f0; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      cursor: pointer; 
+      transition: all 0.2s; 
+    }
+    
+    .notification-close:hover { 
+      background: #e0e0e0; 
+    }
+    
+    .notification-close i { 
+      font-size: 14px; 
+      color: #666; 
+    }
+    
+    .notification-footer { 
+      padding: 15px 22px; 
+      text-align: center; 
+      border-top: 1px solid #f0f0f0; 
+      font-size: 14px; 
+      color: #666; 
+      background: #f9f9f9;
+      border-radius: 0 0 12px 12px;
+    }
+    
+    .notification-footer a { 
+      color: #800000; 
+      text-decoration: none; 
+      font-weight: 600;
+    }
+    
+    .notification-footer a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Payment Detail Styles */
+    .payment-detail-container { 
+      margin-top: 20px; 
+    }
+    
+    .payment-detail-label { 
+      font-weight: 600; 
+      margin-bottom: 10px; 
+      color: #800000; 
+      font-size: 15px;
+    }
+    
+    .payment-detail-input { 
+      width: 100%; 
+      padding: 12px 15px; 
+      border: 1px solid #ddd; 
+      border-radius: 8px; 
+      font-size: 15px; 
+      transition: all 0.3s;
+    }
+    
+    .payment-detail-input:focus { 
+      outline: none; 
+      border-color: #800000; 
+      box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.2); 
+    }
+    
+    .qris-container { 
+      text-align: center; 
+      margin: 25px 0; 
+    }
+    
+    .qris-container img { 
+      width: 200px; 
+      height: 200px; 
+      border: 1px solid #eee; 
+      border-radius: 10px;
+    }
+    
+    .qris-info { 
+      margin-top: 18px; 
+      font-size: 15px; 
+      color: #666; 
+    }
+    
+    .qris-amount { 
+      font-size: 22px; 
+      font-weight: 700; 
+      color: #800000; 
+      margin: 12px 0; 
+    }
+    
+    .qris-timer { 
+      font-size: 16px; 
+      color: #d32f2f; 
+      margin-top: 8px; 
+      font-weight: 600;
+    }
+    
+    .qris-status { 
+      margin-top: 18px; 
+      padding: 12px; 
+      border-radius: 8px; 
+      text-align: center; 
+      font-weight: 600; 
+      font-size: 15px;
+    }
+    
+    .qris-status.waiting { 
+      background: #fff8e1; 
+      color: #e65100; 
+    }
+    
+    .qris-status.success { 
+      background: #e8f5e9; 
+      color: #2e7d32; 
+    }
+    
+    /* Pesanan Resto Styles */
+    .pesanan-resto-container {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+    
+    .pesanan-resto-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .pesanan-resto-header h2 {
+      margin: 0;
+      color: #800000;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .pesanan-resto-filters {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .pesanan-resto-filter {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #f5f5f5;
+      color: #333;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+    }
+    
+    .pesanan-resto-filter.active {
+      background: #800000;
+      color: #FFD700;
+    }
+    
+    .pesanan-resto-filter:hover {
+      background: #e0e0e0;
+    }
+    
+    .pesanan-resto-filter.active:hover {
+      background: #a00000;
+    }
+    
+    .pesanan-resto-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 25px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    
+    .pesanan-resto-table th, .pesanan-resto-table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .pesanan-resto-table th {
+      background: #800000;
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 14px;
+    }
+    
+    .pesanan-resto-table tr:hover {
+      background: #f9f9f9;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .status-badge.sampai {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    
+    .status-badge.proses {
+      background: #fff8e1;
+      color: #ffa000;
+    }
+    
+    .status-badge.belum {
+      background: #ffebee;
+      color: #d32f2f;
+    }
+    
+    .toko-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 6px;
+      background: #f0f0f0;
+      font-size: 13px;
+      color: #333;
+      font-weight: 500;
+    }
+    
+    /* Monitoring Restoran Styles - Enhanced */
+    .meja-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 20px;
+      margin-top: 25px;
+    }
+    
+    .meja-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px 15px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 180px;
+    }
+    
+    .meja-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+    }
+    
+    .meja-card.available {
+      border-left: 5px solid #2e7d32;
+    }
+    
+    .meja-card.occupied {
+      border-left: 5px solid #d32f2f;
+    }
+    
+    .meja-card.reserved {
+      border-left: 5px solid #ffa000;
+    }
+    
+    .meja-icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+    
+    .meja-card.available .meja-icon {
+      color: #2e7d32;
+    }
+    
+    .meja-card.occupied .meja-icon {
+      color: #d32f2f;
+    }
+    
+    .meja-card.reserved .meja-icon {
+      color: #ffa000;
+    }
+    
+    .meja-number {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .meja-status {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    
+    .meja-card.available .meja-status {
+      color: #2e7d32;
+    }
+    
+    .meja-card.occupied .meja-status {
+      color: #d32f2f;
+    }
+    
+    .meja-card.reserved .meja-status {
+      color: #ffa000;
+    }
+    
+    .meja-detail {
+      font-size: 13px;
+      color: #777;
+      margin-top: 10px;
+    }
+    
+    /* Laporan & Statistik Styles */
+    .laporan-container {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    
+    .laporan-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .laporan-header h2 {
+      margin: 0;
+      color: #800000;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .laporan-period {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .laporan-period select {
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .laporan-period select:focus {
+      outline: none;
+      border-color: #800000;
+      box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.2);
+    }
+    
+    .laporan-summary {
+      display: flex;
+      gap: 25px;
+      flex-wrap: wrap;
+    }
+    
+    .laporan-summary-card {
+      flex: 1;
+      min-width: 250px;
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    
+    .laporan-summary-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    }
+    
+    .laporan-summary-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      border-radius: 12px 0 0 12px;
+    }
+    
+    .laporan-summary-card.pemasukan::before {
+      background: #2e7d32;
+    }
+    
+    .laporan-summary-card.pengeluaran::before {
+      background: #d32f2f;
+    }
+    
+    .laporan-summary-card.laba::before {
+      background: #0288d1;
+    }
+    
+    .laporan-summary-icon {
+      font-size: 32px;
+      margin-bottom: 15px;
+    }
+    
+    .laporan-summary-card.pemasukan .laporan-summary-icon {
+      color: #2e7d32;
+    }
+    
+    .laporan-summary-card.pengeluaran .laporan-summary-icon {
+      color: #d32f2f;
+    }
+    
+    .laporan-summary-card.laba .laporan-summary-icon {
+      color: #0288d1;
+    }
+    
+    .laporan-summary-number {
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .laporan-summary-label {
+      font-size: 15px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .laporan-summary-trend {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      border-radius: 20px;
+    }
+    
+    .laporan-summary-trend.up {
+      color: #2e7d32;
+      background: rgba(46, 125, 50, 0.1);
+    }
+    
+    .laporan-summary-trend.down {
+      color: #d32f2f;
+      background: rgba(211, 47, 47, 0.1);
+    }
+    
+    .laporan-charts {
+      display: flex;
+      gap: 25px;
+      flex-wrap: wrap;
+    }
+    
+    .laporan-chart-container {
+      flex: 1;
+      min-width: 350px;
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+    
+    .laporan-chart-container h3 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #800000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+    }
+    
+    .laporan-table-container {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    
+    .laporan-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .laporan-table th, .laporan-table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .laporan-table th {
+      background: #f5f5f5;
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .laporan-table tr:hover {
+      background: #f9f9f9;
+    }
+    
+    .laporan-table .amount {
+      font-weight: 600;
+      text-align: right;
+    }
+    
+    .laporan-table .pemasukan-amount {
+      color: #2e7d32;
+    }
+    
+    .laporan-table .pengeluaran-amount {
+      color: #d32f2f;
+    }
+    
+    /* Dark Mode Styles - Additional */
+    body.dark .pesanan-resto-filter {
+      background: #333;
+      color: #fff;
+    }
+    
+    body.dark .pesanan-resto-filter:hover {
+      background: #444;
+    }
+    
+    body.dark .pesanan-resto-table {
+      background: #2b2b2b;
+      color: #fff;
+    }
+    
+    body.dark .pesanan-resto-table th {
+      background: #333;
+      color: #fff;
+    }
+    
+    body.dark .pesanan-resto-table tr:hover {
+      background: #333;
+    }
+    
+    body.dark .meja-card {
+      background: #2b2b2b;
+      color: #fff;
+    }
+    
+    body.dark .laporan-summary-card {
+      background: #2b2b2b;
+      color: #fff;
+    }
+    
+    body.dark .laporan-chart-container {
+      background: #2b2b2b;
+      color: #fff;
+    }
+    
+    body.dark .laporan-table-container {
+      background: #2b2b2b;
+      color: #fff;
+    }
+    
+    body.dark .laporan-table th {
+      background: #333;
+      color: #fff;
+    }
+    
+    body.dark .laporan-table tr:hover {
+      background: #333;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.show {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+      }
+      
+      .stats {
+        flex-direction: column;
+      }
+      
+      .stat-box {
+        min-width: 100%;
+      }
+      
+      .pesanan-container {
+        flex-direction: column;
+      }
+      
+      .meja-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .laporan-summary {
+        flex-direction: column;
+      }
+      
+      .laporan-charts {
+        flex-direction: column;
+      }
+    }
+    
+    /* Menu Page with Cart Styles */
+    .menu-page-container {
+      display: flex;
+      gap: 25px;
+      flex-wrap: wrap;
+    }
+    
+    .menu-content {
+      flex: 3;
+      min-width: 300px;
+    }
+    
+    .cart-sidebar {
+      flex: 1;
+      min-width: 300px;
+      position: sticky;
+      top: 100px;
+      height: fit-content;
+    }
+    
+    .cart-container {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    
+    .cart-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      color: #800000;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .cart-form {
+      margin-bottom: 20px;
+    }
+    
+    .cart-items {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+    
+    .cart-empty {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+    }
+    
+    .cart-empty i {
+      font-size: 36px;
+      color: #ddd;
+      margin-bottom: 10px;
+    }
+    
+    .cart-summary {
+      border-top: 1px solid #eee;
+      padding-top: 15px;
+      margin-top: 15px;
+    }
+    
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 18px;
+      color: #800000;
+      margin-bottom: 15px;
+    }
+    
+    .cart-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .cart-quantity-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .quantity-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: none;
+      background: #800000;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .quantity-btn:hover {
+      background: #a00000;
+    }
+    
+    .quantity-value {
+      min-width: 30px;
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    /* Success notification */
+    .success-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #2e7d32;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideInRight 0.3s ease, slideOutRight 0.3s ease 2.7s;
+    }
+    
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideOutRight {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Page -->
+  <div class="login-container" id="loginContainer">
+    <div class="login-box">
+      <div class="login-header">
+        <h1><i class="fas fa-utensils"></i> Salero Basamo</h1>
+        <p>Silakan login untuk mengakses sistem</p>
+      </div>
+      
+      <div class="login-error" id="loginError">
+        Username atau password salah!
+      </div>
+      
+      <form class="login-form" id="loginForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Masukkan username" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Masukkan password" required>
+        </div>
+        <button type="submit" class="btn">Login</button>
+      </form>
+      
+      <div class="login-footer">
+        <p>&copy; 2023 Salero Basamo. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar" style="display: none;">
+    <h2><i class="fas fa-utensils"></i> Salero Basamo</h2>
+    <ul>
+      <li data-page="dashboard"><i class="fas fa-home"></i> Dashboard</li>
+      <li data-page="monitoring"><i class="fas fa-tv"></i> Monitoring Restoran</li>
+      <li data-page="pesananResto"><i class="fas fa-box-open"></i> Pesanan Resto</li>
+      <li data-page="menu"><i class="fas fa-hamburger"></i> Menu Makanan & Minuman</li>
+      <li data-page="laporanStatistik"><i class="fas fa-chart-bar"></i> Laporan & Statistik</li>
+      <li data-page="about"><i class="fas fa-info-circle"></i> Tentang Resto</li>
+      <li><i class="fas fa-moon"></i> <span id="darkModeToggle">Mode Gelap</span></li>
+      <li id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Log Out</li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="main-content" style="display: none;">
+    <header>
+      <div style="display:flex;align-items:center;">
+        <button class="toggle-btn" id="toggle-btn">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1><i class="fas fa-utensils"></i> Salero Basamo - Rumah Makan</h1>
+      </div>
+      <div class="user-info">
+        <div>Hallo, <strong>Khairul</strong> (Kasir)</div>
+        <div class="notification-panel">
+          <div class="notification-bell" id="notificationBell">
+            <i class="fas fa-bell"></i>
+            <div class="notification-badge" id="notificationCount">0</div>
+          </div>
+          <div class="notification-dropdown" id="notificationDropdown">
+            <div class="notification-header">
+              <h3>Notifikasi</h3>
+              <span class="clear-all" id="clearAllNotif">Hapus Semua</span>
+            </div>
+            <div class="notification-list" id="notificationList">
+              <!-- Notifikasi akan ditambahkan melalui JavaScript -->
+            </div>
+            <div class="notification-footer">
+              <a href="#" id="viewAllNotif">Lihat Semua Notifikasi</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard Page -->
+    <div class="container page active" id="dashboard">
+      <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+      
+      <!-- Stats Overview -->
+      <div class="stats">
+        <div class="stat-box">
+          <div class="trend up"><i class="fas fa-arrow-up"></i> 12%</div>
+          <div class="icon">👥</div>
+          <div class="number" id="stat-pengunjung">5</div>
+          <div class="label">Pengunjung Hari Ini</div>
+        </div>
+        <div class="stat-box">
+          <div class="trend up"><i class="fas fa-arrow-up"></i> 8%</div>
+          <div class="icon">🧑‍🤝‍🧑</div>
+          <div class="number" id="stat-pelanggan">75</div>
+          <div class="label">Pelanggan Terdaftar</div>
+        </div>
+        <div class="stat-box">
+          <div class="trend down"><i class="fas fa-arrow-down"></i> 3%</div>
+          <div class="icon">📈</div>
+          <div class="number" id="stat-profit">78%</div>
+          <div class="label">Rasio Profit</div>
+        </div>
+        <div class="stat-box">
+          <div class="trend up"><i class="fas fa-arrow-up"></i> 15%</div>
+          <div class="icon">💰</div>
+          <div class="number" id="stat-transaksi">56</div>
+          <div class="label">Transaksi Hari Ini</div>
+        </div>
+      </div>
+
+      <!-- Chart Section -->
+      <div class="chart-container">
+        <h3><i class="fas fa-chart-line"></i> Grafik Penjualan Mingguan</h3>
+        <canvas id="penjualanChart" height="80"></canvas>
+      </div>
+
+      <div style="display: flex; gap: 25px; flex-wrap: wrap;">
+        <!-- Menu Terlaris Section -->
+        <div class="menu-section" style="flex: 1; min-width: 350px;">
+          <h2><i class="fas fa-fire"></i> Menu Terlaris</h2>
+          <div id="menu-terlaris"></div>
+        </div>
+
+        <!-- Aktivitas Terkini -->
+        <div class="dashboard-section" style="flex: 1; min-width: 350px;">
+          <h2><i class="fas fa-history"></i> Aktivitas Terkini</h2>
+          <div id="aktivitas-terkini"></div>
+        </div>
+      </div>
+
+      <!-- Pesanan Terakhir Section -->
+      <div class="dashboard-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2><i class="fas fa-receipt"></i> Pesanan Terakhir</h2>
+          <div class="filter-bar">
+            <button id="filterSemua" class="filter-btn">Semua</button>
+            <button id="filterLima" class="filter-btn">Kembali</button>
+          </div>
+        </div>
+        <div id="pesananTerakhir"></div>
+      </div>
+    </div>
+
+    <!-- Pesanan Resto Page -->
+    <div class="container page" id="pesananResto">
+      <div class="pesanan-resto-container">
+        <div class="pesanan-resto-header">
+          <h2><i class="fas fa-box-open"></i> Pesanan Bahan Baku Resto</h2>
+          <div class="pesanan-resto-filters">
+            <button class="pesanan-resto-filter active">Semua</button>
+            <button class="pesanan-resto-filter">Sampai</button>
+            <button class="pesanan-resto-filter">Proses</button>
+            <button class="pesanan-resto-filter">Belum</button>
+          </div>
+        </div>
+        
+        <table class="pesanan-resto-table">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Bahan Baku</th>
+              <th>Toko</th>
+              <th>Tujuan Pengantaran</th>
+              <th>Status</th>
+              <th>Total Bayar</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="pesananRestoTable">
+            <tr>
+              <td>1</td>
+              <td>Daging Sapi</td>
+              <td><span class="toko-badge">Toko Sapi Segar</span></td>
+              <td>Salero Basamo - Dapur</td>
+              <td><span class="status-badge sampai">Sampai</span></td>
+              <td>Rp 1.500.000</td>
+              <td>
+                <button class="btn btn-info" style="padding: 6px 12px; font-size: 13px;">
+                  <i class="fas fa-eye"></i> Detail
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Ayam Kampung</td>
+              <td><span class="toko-badge">Poultry Fresh</span></td>
+              <td>Salero Basamo - Dapur</td>
+              <td><span class="status-badge proses">Proses</span></td>
+              <td>Rp 850.000</td>
+              <td>
+                <button class="btn btn-info" style="padding: 6px 12px; font-size: 13px;">
+                  <i class="fas fa-eye"></i> Detail
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Beras</td>
+              <td><span class="toko-badge">Toko Beras Makmur</span></td>
+              <td>Salero Basamo - Gudang</td>
+              <td><span class="status-badge sampai">Sampai</span></td>
+              <td>Rp 1.200.000</td>
+              <td>
+                <button class="btn btn-info" style="padding: 6px 12px; font-size: 13px;">
+                  <i class="fas fa-eye"></i> Detail
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Minyak Goreng</td>
+              <td><span class="toko-badge">Toko Semesta</span></td>
+              <td>Salero Basamo - Dapur</td>
+              <td><span class="status-badge belum">Belum</span></td>
+              <td>Rp 650.000</td>
+              <td>
+                <button class="btn btn-info" style="padding: 6px 12px; font-size: 13px;">
+                  <i class="fas fa-eye"></i> Detail
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Sayuran Segar</td>
+              <td><span class="toko-badge">Sayur Mayur Segar</span></td>
+              <td>Salero Basamo - Dapur</td>
+              <td><span class="status-badge proses">Proses</span></td>
+              <td>Rp 450.000</td>
+              <td>
+                <button class="btn btn-info" style="padding: 6px 12px; font-size: 13px;">
+                  <i class="fas fa-eye"></i> Detail
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Rempah-rempah</td>
+              <td><span class="toko-badge">Toko Rempah Nusantara</span></td>
+              <td>Salero Basamo - Gudang</td>
+              <td><span class="status-badge sampai">Sampai</span></td>
+              <td>Rp 750.000</td>
+              <td>
+                <button class="btn btn-info" style="padding: 6px 12px; font-size: 13px;">
+                  <i class="fas fa-eye"></i> Detail
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>Telur Ayam</td>
+              <td><span class="toko-badge">Poultry Fresh</span></td>
+              <td>Salero Basamo - Dapur</td>
+              <td><span class="status-badge belum">Belum</span></td>
+              <td>Rp 380.000</td>
+              <td>
+                <button class="btn btn-info" style="padding: 6px 12px; font-size: 13px;">
+                  <i class="fas fa-eye"></i> Detail
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>Susu</td>
+              <td><span class="toko-badge">Toko Susu Sehat</span></td>
+              <td>Salero Basamo - Dapur</td>
+              <td><span class="status-badge proses">Proses</span></td>
+              <td>Rp 420.000</td>
+              <td>
+                <button class="btn btn-info" style="padding: 6px 12px; font-size: 13px;">
+                  <i class="fas fa-eye"></i> Detail
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Monitoring Restoran Page -->
+    <div class="container page" id="monitoring">
+      <h2><i class="fas fa-tv"></i> Monitoring Restoran</h2>
+      
+      <!-- Stats -->
+      <div class="stats">
+        <div class="stat-box">
+          <div class="icon">🪑</div>
+          <div class="number" id="totalMeja">15</div>
+          <div class="label">Total Meja</div>
+        </div>
+        <div class="stat-box">
+          <div class="icon">✅</div>
+          <div class="number" id="pesananCompleteCount">0</div>
+          <div class="label">Pesanan Complete</div>
+        </div>
+        <div class="stat-box">
+          <div class="icon">⏳</div>
+          <div class="number" id="pesananProcessCount">0</div>
+          <div class="label">Pesanan Process</div>
+        </div>
+      </div>
+      
+      <h3>Status Meja</h3>
+      <div class="meja-grid" id="statusMeja">
+        <!-- Meja cards akan ditambahkan melalui JavaScript -->
+      </div>
+
+      <h3>Pesanan Complete</h3>
+      <table aria-label="Tabel Pesanan Complete">
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Menu</th>
+            <th>Total Bayar</th>
+            <th>Status Bayar</th>
+            <th>Metode Bayar</th>
+          </tr>
+        </thead>
+        <tbody id="pesananCompleteTable"></tbody>
+      </table>
+
+      <h3>Grafik Pesanan Bulanan</h3>
+      <div class="chart-container">
+        <canvas id="grafikBulanan" height="100"></canvas>
+      </div>
+    </div>
+
+    <!-- Laporan & Statistik Page -->
+    <div class="container page" id="laporanStatistik">
+      <div class="laporan-container">
+        <div class="laporan-header">
+          <h2><i class="fas fa-chart-line"></i> Laporan Keuangan</h2>
+          <div class="laporan-period">
+            <select id="periodeLaporan">
+              <option value="harian">Harian</option>
+              <option value="mingguan">Mingguan</option>
+              <option value="bulanan" selected>Bulanan</option>
+              <option value="tahunan">Tahunan</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Summary Cards -->
+        <div class="laporan-summary">
+          <div class="laporan-summary-card pemasukan">
+            <div class="laporan-summary-trend up">
+              <i class="fas fa-arrow-up"></i> 12%
+            </div>
+            <div class="laporan-summary-icon">
+              <i class="fas fa-arrow-up"></i>
+            </div>
+            <div class="laporan-summary-number">Rp 85.500.000</div>
+            <div class="laporan-summary-label">Total Pemasukan</div>
+          </div>
+          
+          <div class="laporan-summary-card pengeluaran">
+            <div class="laporan-summary-trend down">
+              <i class="fas fa-arrow-down"></i> 5%
+            </div>
+            <div class="laporan-summary-icon">
+              <i class="fas fa-arrow-down"></i>
+            </div>
+            <div class="laporan-summary-number">Rp 42.300.000</div>
+            <div class="laporan-summary-label">Total Pengeluaran</div>
+          </div>
+          
+          <div class="laporan-summary-card laba">
+            <div class="laporan-summary-trend up">
+              <i class="fas fa-arrow-up"></i> 18%
+            </div>
+            <div class="laporan-summary-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="laporan-summary-number">Rp 43.200.000</div>
+            <div class="laporan-summary-label">Laba Bersih</div>
+          </div>
+        </div>
+        
+        <!-- Charts -->
+        <div class="laporan-charts">
+          <div class="laporan-chart-container">
+            <h3><i class="fas fa-chart-line"></i> Grafik Pemasukan & Pengeluaran</h3>
+            <canvas id="keuanganChart" height="100"></canvas>
+          </div>
+        </div>
+        
+        <!-- Table -->
+        <div class="laporan-table-container">
+          <h3><i class="fas fa-table"></i> Detail Laporan Keuangan</h3>
+          <table class="laporan-table">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Keterangan</th>
+                <th>Kategori</th>
+                <th class="amount">Pemasukan</th>
+                <th class="amount">Pengeluaran</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2025-06-01</td>
+                <td>Penjualan Makanan</td>
+                <td>Penjualan</td>
+                <td class="amount pemasukan-amount">Rp 2.850.000</td>
+                <td class="amount">-</td>
+              </tr>
+              <tr>
+                <td>2025-06-01</td>
+                <td>Pembelian Daging Sapi</td>
+                <td>Bahan Baku</td>
+                <td class="amount">-</td>
+                <td class="amount pengeluaran-amount">Rp 1.500.000</td>
+              </tr>
+              <tr>
+                <td>2025-06-02</td>
+                <td>Penjualan Makanan</td>
+                <td>Penjualan</td>
+                <td class="amount pemasukan-amount">Rp 3.200.000</td>
+                <td class="amount">-</td>
+              </tr>
+              <tr>
+                <td>2025-06-02</td>
+                <td>Pembelian Ayam</td>
+                <td>Bahan Baku</td>
+                <td class="amount">-</td>
+                <td class="amount pengeluaran-amount">Rp 850.000</td>
+              </tr>
+              <tr>
+                <td>2025-06-03</td>
+                <td>Penjualan Makanan</td>
+                <td>Penjualan</td>
+                <td class="amount pemasukan-amount">Rp 2.950.000</td>
+                <td class="amount">-</td>
+              </tr>
+              <tr>
+                <td>2025-06-03</td>
+                <td>Gaji Karyawan</td>
+                <td>Operasional</td>
+                <td class="amount">-</td>
+                <td class="amount pengeluaran-amount">Rp 5.000.000</td>
+              </tr>
+              <tr>
+                <td>2025-06-04</td>
+                <td>Penjualan Makanan</td>
+                <td>Penjualan</td>
+                <td class="amount pemasukan-amount">Rp 3.100.000</td>
+                <td class="amount">-</td>
+              </tr>
+              <tr>
+                <td>2025-06-04</td>
+                <td>Listrik & Air</td>
+                <td>Operasional</td>
+                <td class="amount">-</td>
+                <td class="amount pengeluaran-amount">Rp 1.200.000</td>
+              </tr>
+              <tr>
+                <td>2025-06-05</td>
+                <td>Penjualan Makanan</td>
+                <td>Penjualan</td>
+                <td class="amount pemasukan-amount">Rp 3.400.000</td>
+                <td class="amount">-</td>
+              </tr>
+              <tr>
+                <td>2025-06-05</td>
+                <td>Pembelian Beras</td>
+                <td>Bahan Baku</td>
+                <td class="amount">-</td>
+                <td class="amount pengeluaran-amount">Rp 1.200.000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu Makanan & Minuman Page -->
+    <div class="container page" id="menu">
+      <h1><i class="fas fa-utensils"></i> Menu Makanan & Minuman</h1>
+      
+      <div class="menu-page-container">
+        <div class="menu-content">
+          <div class="menu-search">
+            <input type="text" placeholder="Cari menu..." id="menuSearch">
+            <i class="fas fa-search"></i>
+          </div>
+          
+          <div class="menu-tabs">
+            <div class="menu-tab active" data-tab="makanan">
+              <i class="fas fa-drumstick-bite"></i> Makanan
+            </div>
+            <div class="menu-tab" data-tab="minuman">
+              <i class="fas fa-glass-cheers"></i> Minuman
+            </div>
+          </div>
+          
+          <div id="makanan-content" class="menu-content-section">
+            <div class="menu-grid" id="makanan-grid">
+              <!-- Makanan items akan ditambahkan melalui JavaScript -->
+            </div>
+          </div>
+          
+          <div id="minuman-content" class="menu-content-section" style="display: none;">
+            <div class="menu-grid" id="minuman-grid">
+              <!-- Minuman items akan ditambahkan melalui JavaScript -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- Keranjang Belanja -->
+        <div class="cart-sidebar">
+          <div class="cart-container">
+            <div class="cart-header">
+              <i class="fas fa-shopping-cart"></i> Keranjang Belanja
+            </div>
+            
+            <div class="cart-form">
+              <div class="form-group">
+                <label for="inputNamaPelanggan">Nama Pelanggan</label>
+                <input type="text" id="inputNamaPelanggan" placeholder="Masukkan nama pelanggan">
+              </div>
+              <div class="form-group">
+                <label for="inputMeja">Nomor Meja</label>
+                <input type="number" id="inputMeja" placeholder="Masukkan nomor meja" min="1" max="15">
+              </div>
+            </div>
+            
+            <div class="cart-items" id="keranjang-items">
+              <div class="cart-empty">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Keranjang belanja kosong</p>
+              </div>
+            </div>
+            
+            <div class="cart-summary" id="cart-summary" style="display: none;">
+              <div class="cart-total">
+                <span>Total:</span>
+                <span id="total-bayar">Rp 0</span>
+              </div>
+              
+              <div class="cart-actions">
+                <button id="btnBayar" class="btn btn-success btn-block">
+                  <i class="fas fa-money-bill-wave"></i> Proses Pembayaran
+                </button>
+                <button id="btnBatal" class="btn btn-danger btn-block">
+                  <i class="fas fa-trash"></i> Batalkan Pesanan
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal Pembayaran -->
+      <div id="modalPembayaran" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3><i class="fas fa-credit-card"></i> Pilih Metode Pembayaran</h3>
+            <span class="modal-close">&times;</span>
+          </div>
+          <div class="modal-body">
+            <div class="payment-methods">
+              <div class="payment-method" data-method="Tunai">
+                <i class="fas fa-money-bill-wave"></i>
+                <div class="payment-method-title">Tunai</div>
+              </div>
+              <div class="payment-method" data-method="E-wallet">
+                <i class="fas fa-wallet"></i>
+                <div class="payment-method-title">E-Wallet</div>
+              </div>
+              <div class="payment-method" data-method="QRIS">
+                <i class="fas fa-qrcode"></i>
+                <div class="payment-method-title">QRIS</div>
+              </div>
+              <div class="payment-method" data-method="M-Banking">
+                <i class="fas fa-mobile-alt"></i>
+                <div class="payment-method-title">M-Banking</div>
+              </div>
+            </div>
+            
+            <div id="pembayaran-detail" style="margin-top: 25px; display: none;">
+              <h4>Detail Pembayaran</h4>
+              <div id="pembayaran-info"></div>
+              <div style="margin-top: 18px; font-weight: bold; font-size: 20px;">
+                Total: <span id="modal-total-bayar"></span>
+              </div>
+              
+              <!-- E-wallet Detail -->
+              <div id="ewallet-detail" class="payment-detail-container" style="display: none;">
+                <div class="payment-detail-label">Nomor E-wallet</div>
+                <input type="text" id="ewallet-number" class="payment-detail-input" placeholder="Contoh: 081234567890">
+                <div style="margin-top: 12px; font-size: 13px; color: #666;">
+                  Masukkan nomor telepon terdaftar untuk E-wallet (OVO, GoPay, DANA, dll)
+                </div>
+              </div>
+              
+              <!-- M-Banking Detail -->
+              <div id="mbanking-detail" class="payment-detail-container" style="display: none;">
+                <div class="payment-detail-label">Nomor Rekening</div>
+                <input type="text" id="mbanking-number" class="payment-detail-input" placeholder="Contoh: 1234567890">
+                <div style="margin-top: 12px; font-size: 13px; color: #666;">
+                  Masukkan nomor rekening untuk M-Banking (BCA, Mandiri, BNI, dll)
+                </div>
+              </div>
+              
+              <!-- QRIS Detail -->
+              <div id="qris-detail" class="payment-detail-container" style="display: none;">
+                <div class="qris-container">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/1200px-QR_Code_Example.svg.png" alt="QRIS">
+                  <div class="qris-info">Scan QR Code ini untuk membayar</div>
+                  <div class="qris-amount" id="qris-amount">Rp 0</div>
+                  <div class="qris-timer" id="qris-timer">Waktu tersisa: 05:00</div>
+                  <div class="qris-status waiting" id="qris-status">Menunggu pembayaran...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="btnKonfirmasiBayar" class="btn btn-success" disabled>Konfirmasi Pembayaran</button>
+            <button id="btnBatalBayar" class="btn">Batal</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal Struk Pembayaran -->
+      <div id="modalStruk" class="modal">
+        <div class="struk-container">
+          <div class="struk-header">
+            <h2>SALERO BASAMO</h2>
+            <p>Rumah Makan Khas Minang</p>
+            <p>Jl. Kb. Pedes No.44 J, RW.02, Kedungbadak, Kec. Tanah Sereal, Kota Bogor, Jawa Barat 16164</p>
+            <p>Telp: (0751) 123456 | WA: 0812-3456-7890</p>
+          </div>
+          
+          <div class="struk-info">
+            <span>No. Struk:</span>
+            <span id="struk-no">#TRX-001</span>
+          </div>
+          <div class="struk-info">
+            <span>Tanggal:</span>
+            <span id="struk-tanggal"></span>
+          </div>
+          <div class="struk-info">
+            <span>Kasir:</span>
+            <span>Khairul</span>
+          </div>
+          <div class="struk-info">
+            <span>Pelanggan:</span>
+            <span id="struk-pelanggan"></span>
+          </div>
+          <div class="struk-info">
+            <span>Meja:</span>
+            <span id="struk-meja"></span>
+          </div>
+          
+          <div class="struk-items">
+            <div style="font-weight: bold; margin-bottom: 10px; border-bottom: 1px dotted #ccc; padding-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between;">
+                <span style="flex: 2;">Item</span>
+                <span style="flex: 1; text-align: center;">Qty</span>
+                <span style="flex: 1; text-align: right;">Harga</span>
+              </div>
+            </div>
+            <div id="struk-detail-items"></div>
+          </div>
+          
+          <div class="struk-total">
+            <div class="struk-total-row">
+              <span>Subtotal:</span>
+              <span id="struk-subtotal"></span>
+            </div>
+            <div class="struk-total-row">
+              <span>Service (5%):</span>
+              <span id="struk-service"></span>
+            </div>
+            <div class="struk-total-row">
+              <span>Pajak (10%):</span>
+              <span id="struk-pajak"></span>
+            </div>
+            <div class="struk-grand-total">
+              <span>TOTAL BAYAR:</span>
+              <span id="struk-grand-total"></span>
+            </div>
+          </div>
+          
+          <div class="struk-payment">
+            <div class="struk-info">
+              <span>Metode Pembayaran:</span>
+              <span id="struk-metode"></span>
+            </div>
+            <div class="struk-info">
+              <span>Status:</span>
+              <span style="color: #2e7d32; font-weight: bold;">LUNAS</span>
+            </div>
+          </div>
+          
+          <div class="struk-qrcode">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/1200px-QR_Code_Example.svg.png" alt="QR Code">
+            <p style="font-size: 11px; margin-top: 8px;">Scan untuk verifikasi</p>
+          </div>
+          
+          <div class="struk-footer">
+            <p>Terima kasih atas kunjungan Anda</p>
+            <p>Jam Buka: 09.00 - 22.00 WIB</p>
+          </div>
+          
+          <div class="struk-actions">
+            <button id="btnCetakStruk" class="btn btn-info">
+              <i class="fas fa-print"></i> Cetak Struk
+            </button>
+            <button id="btnTutupStruk" class="struk-close-btn">
+              <i class="fas fa-times"></i> Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tentang Resto Page -->
+    <div class="container page" id="about">
+      <h1><i class="fas fa-store"></i> Tentang Restoran Salero Basamo</h1>
+      
+      <!-- SOP Section -->
+      <div class="sop-section">
+        <h2><i class="fas fa-clipboard-list"></i> SOP Restoran</h2>
+        <ul class="sop-list">
+          <li><strong>Setiap anggota tim</strong> wajib menjaga nama baik diri sendiri dan restoran di hadapan tamu.</li>
+          <li><strong>Menjaga sikap dan sopan santun</strong> di hadapan tamu.</li>
+          <li><strong>Mengucapkan selamat datang</strong>, mencatat dan melayani dengan baik pesanan tamu.</li>
+          <li><strong>Aturan tentang melayani tamu</strong> diatur terpisah.</li>
+          <li><strong>Apabila terjadi perselisihan</strong> harap diselesaikan dengan baik.</li>
+        </ul>
+      </div>
+      
+      <!-- Resto Info Section -->
+      <div class="resto-info">
+        <h2><i class="fas fa-utensils"></i> Tentang Restoran Kami</h2>
+        <div class="resto-info-content">
+          <div class="resto-info-text">
+            <div class="resto-description">
+              <p><strong>Salero Basamo</strong> adalah rumah makan khas Minangkabau yang menyajikan berbagai hidangan autentik dengan cita rasa khas Padang yang kaya dan lezat. Didirikan pada tahun 2010, restoran kami telah menjadi salah satu destinasi kuliner terfavorit di kota ini.</p>
+              <p>Kami menghadirkan pengalaman bersantap yang autentik dengan resep-resep turun temurun yang dijaga keasliannya. Daging rendang yang empuk, ayam pop yang gurih, dan sate padang yang kaya bumbu menjadi andalan kami.</p>
+              <p>Di Salero Basamo, kami tidak hanya menyajikan makanan, tetapi juga kehangatan dan keramahan khas Minang yang membuat setiap tamu merasa seperti di rumah sendiri.</p>
+            </div>
+            
+            <div class="resto-features">
+              <div class="feature-item">
+                <i class="fas fa-pepper-hot"></i>
+                <span>Cita Rasa Autentik</span>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-leaf"></i>
+                <span>Bahan Berkualitas</span>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-utensil-spoon"></i>
+                <span>Resep Turun Temurun</span>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-clock"></i>
+                <span>Setiap Hari 09.00-22.00</span>
+              </div>
+            </div>
+          </div>
+          <div class="resto-info-image">
+            <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=600&q=80" alt="Rumah Makan Padang">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Contact Section -->
+      <div class="contact-section">
+        <h2><i class="fas fa-address-book"></i> Kontak & Lokasi</h2>
+        
+        <div class="contact-info">
+          <div class="contact-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+              <strong>Alamat</strong>
+              <p>Jl. Kb. Pedes No.44 J, RW.02, Kedungbadak, Kec. Tanah Sereal, Kota Bogor, Jawa Barat 16164</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-phone-alt"></i>
+            <div>
+              <strong>Telepon</strong>
+              <p>(0751) 123456</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-mobile-alt"></i>
+            <div>
+              <strong>WhatsApp</strong>
+              <p>0812-3456-7890</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-envelope"></i>
+            <div>
+              <strong>Email</strong>
+              <p>info@salerobasamo.com</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="map-container">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.665790813748!2d106.80904831536873!3d-6.598742895177535!2m3!1f0!2f0!3m3!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c5f5e5e5e5e5%3A0x8a3a4e4e4e4e4e4e!2sJl.+Kb.+Pedes+No.44+J%2C+RW.02%2C+Kedungbadak%2C+Kec.+Tanah+Sereal%2C+Kota+Bogor%2C+Jawa+Barat+16164!5e0!3m2!1sid!2sid!4v1623145678901!5m2!1sid!2sid" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============ GLOBAL VARIABLES ============
+    const toggleBtn = document.getElementById("toggle-btn");
+    const sidebar = document.getElementById("sidebar");
+    const mainContent = document.getElementById("main-content");
+    const loginContainer = document.getElementById("loginContainer");
+    const loginForm = document.getElementById("loginForm");
+    const loginError = document.getElementById("loginError");
+    const logoutBtn = document.getElementById("logoutBtn");
+    
+    // Data variables
+    const keranjang = [];
+    let selectedPaymentMethod = '';
+    let currentTableNumber = null;
+    const notifications = [];
+    
+    // Menu data with prices
+    const menuData = {
+      "Rendang Daging": 50000,
+      "Ayam Pop": 35000,
+      "Sate Padang": 40000,
+      "Gulai Ayam": 38000,
+      "Ikan Bakar": 45000,
+      "Nasi Goreng": 30000,
+      "Mie Goreng": 28000,
+      "Teh Manis": 5000,
+      "Es Jeruk": 8000,
+      "Kopi": 10000
+    };
+    
+    // Data for new orders
+    const pesananBaruData = [];
+    
+    // Table data
+    const mejaData = [
+      {nomor:1, status:"available"}, {nomor:2, status:"occupied"}, {nomor:3, status:"available"},
+      {nomor:4, status:"occupied"}, {nomor:5, status:"available"}, {nomor:6, status:"occupied"},
+      {nomor:7, status:"available"}, {nomor:8, status:"occupied"}, {nomor:9, status:"available"},
+      {nomor:10, status:"occupied"}, {nomor:11, status:"available"}, {nomor:12, status:"available"},
+      {nomor:13, status:"occupied"}, {nomor:14, status:"available"}, {nomor:15, status:"occupied"}
+    ];
+    
+    const pesananCompleteData = [
+      {nama:"Andi", menu:"Rendang + Teh Manis", total:55000, bayar:"Sudah", metode:"Tunai"},
+      {nama:"Budi", menu:"Ayam Pop + Es Jeruk", total:48000, bayar:"Belum", metode:"Dana"},
+      {nama:"Citra", menu:"Sate Padang + Air Mineral", total:45000, bayar:"Sudah", metode:"Gopay"},
+      {nama:"Dewi", menu:"Nasi Goreng + Kopi", total:40000, bayar:"Belum", metode:"OVO"},
+      {nama:"Eko", menu:"Ikan Bakar + Es Teh", total:60000, bayar:"Sudah", metode:"Tunai"},
+      {nama:"Fajar", menu:"Ayam Gulai + Teh Tarik", total:52000, bayar:"Belum", metode:"Gopay"},
+      {nama:"Gita", menu:"Nasi Uduk + Jus Alpukat", total:47000, bayar:"Sudah", metode:"Dana"},
+      {nama:"Heri", menu:"Soto Padang + Teh Manis", total:50000, bayar:"Belum", metode:"OVO"}
+    ];
+    
+    const pesananHariIniData = [
+      {nama:"Andi", meja:1, status:"Complete"},
+      {nama:"Budi", meja:2, status:"Process"},
+      {nama:"Citra", meja:3, status:"Complete"},
+      {nama:"Dewi", meja:4, status:"Process"},
+      {nama:"Eko", meja:5, status:"Complete"},
+      {nama:"Fajar", meja:6, status:"Process"},
+      {nama:"Gita", meja:7, status:"Complete"},
+      {nama:"Heri", meja:8, status:"Process"}
+    ];
+    
+    const terlarisData = [
+      {id: 1, name: "Rendang", desc: "Daging sapi dimasak dengan bumbu khas Minang", price: 25000, img: "rendang.jpg", qty: 42},
+      {id: 2, name: "Ayam Pop", desc: "Ayam goreng putih khas Padang", price: 35000, img: "ayam pop.jpg", qty: 38},
+      {id: 3, name: "Sate Padang", desc: "Sate daging dengan kuah kental khas Padang", price: 40000, img: "sate.jpg", qty: 35}
+    ];
+    
+    const aktivitasData = [
+      {icon: "fa-user-plus", title: "Pelanggan baru terdaftar", time: "5 menit yang lalu"},
+      {icon: "fa-shopping-cart", title: "Pesanan baru dari Meja 5", time: "12 menit yang lalu"},
+      {icon: "fa-credit-card", title: "Pembayaran selesai #INV-00123", time: "18 menit yang lalu"},
+      {icon: "fa-star", title: "Ulasan baru diterima", time: "25 menit yang lalu"},
+      {icon: "fa-truck", title: "Pengiriman bahan baku tiba", time: "1 jam yang lalu"}
+    ];
+    
+    const pesananData = [
+      {nama: "👤 Andi", tanggal: "2025-06-13", pesan: "Rendang + Teh Manis", total: 55000},
+      {nama: "👤 Budi", tanggal: "2025-06-13", pesan: "Ayam Pop + Es Jeruk", total: 48000},
+      {nama: "👤 Citra", tanggal: "2025-06-13", pesan: "Sate Padang + Air Mineral", total: 45000},
+      {nama: "👤 Dewi", tanggal: "2025-06-12", pesan: "Nasi Goreng + Kopi", total: 40000},
+      {nama: "👤 Eko", tanggal: "2025-06-12", pesan: "Ikan Bakar + Es Teh", total: 60000},
+      {nama: "👤 Fajar", tanggal: "2025-06-12", pesan: "Ayam Gulai + Teh Tarik", total: 52000},
+      {nama: "👤 Gita", tanggal: "2025-06-11", pesan: "Nasi Uduk + Jus Alpukat", total: 47000},
+      {nama: "👤 Heri", tanggal: "2025-06-11", pesan: "Soto Padang + Teh Manis", total: 50000},
+      {nama: "👤 Indah", tanggal: "2025-06-11", pesan: "Ayam Goreng + Es Jeruk", total: 49000},
+      {nama: "👤 Joko", tanggal: "2025-06-10", pesan: "Mie Goreng + Kopi", total: 42000}
+    ];
+    
+    // Menu data
+    const makananData = [
+      {name: "Rendang Daging", desc: "Daging sapi dimasak dengan bumbu khas Minang", price: 25000, img: "rendang.jpg"},
+      {name: "Ayam Pop", desc: "Ayam goreng putih khas Padang", price: 20000, img: "ayam pop.jpg"},
+      {name: "Sate Padang", desc: "Sate daging dengan kuah kental khas Padang", price: 15000, img: "sate.jpg"},
+      {name: "Ayam bakar", desc: "Ayam yang lembut", price: 18000, img: "ayam bakar padang.jpg"},
+      {name: "Ikan Bawal Bakar", desc: "Ikan bakar dengan sambal khas Padang", price: 20000, img: "ikan bawal bakar.jpg"},
+      {name: "Dendeng Balado", desc: "Daging sapi kering dengan balado", price: 18000, img: "dendeng.jpg"},
+      {name: "Soto Padang", desc: "Soto dengan kuah bening khas Padang", price: 23000, img: "soto.jpg"},
+      {name: "Gulai Kepala Kakap", desc: "Kepala ikan dengan kuah gulai pedas", price: 20000, img: "gulai kepala kakap.jpg"},
+      {name: "Ayam Goreng Balado", desc: "Ayam goreng dengan sambal balado", price: 14000, img: "ayam goreng.jpg"},
+      {name: "Telur Balado", desc: "Telur dadar dengan sambal balado", price: 7000, img: "telor.jpg"},
+      {name: "Perkedel Kentang", desc: "Perkedel kentang khas Padang", price: 7000, img: "perkedel kentang.jpg"},
+      {name: "Ikan Asam Padeh", desc: "Ikan yang rasanya asam pedas", price: 22000, img: "ikan asam padeh.jpg"},
+      {name: "Kerupuk Jangek", desc: "Kerupuk yang krzzz", price: 10000, img: "kerupuk jangek.jpg"},
+      {name: "Gulai Nangka", desc: "Gulai Nangka yang rasanya gurih pedas", price: 9000, img: "gulai nangka.jpg"},
+      {name: "Gulai Daun Singkong", desc: "singkong yang rasanya pahit dan berserat", price: 5000, img: "gulai daun singong.jpg"},
+      {name: "Daging Cincang", desc: "Daging cincang dengan kentang", price: 15000, img: "daging cincang.jpg"},
+      {name: "Nasi Kapau", desc: "Nasi Kapau porsi lengkap", price: 25000, img: "nasi kapau.jpg"},
+      {name: "Lamang Tapai", desc: "beras ketan putih yang dimasak dengan santan, garam dan pandan.", price: 10000, img: "lamang.jpg"},
+      {name: "Rendang Suwir", desc: "Suwiran daging rendang", price: 19000, img: "rendang suwir.jpg"},
+      {name: "Kalio Daging", desc: "Campuran daging kikil dan usus", price: 17000, img: "kalio.jpg"},
+      {name: "Telor Dadar", desc: "Campuran telor dengan cabai daun bawang", price: 8000, img: "telor dadar.jpg"},
+      {name: "Lompong Sagu", desc: "sagu,pisang gepok,santan kelapa dan gula aren", price: 15000, img: "lompong.jpg"},
+      {name: "Martabak Kubang", desc: "Martabak kubang biasa seperti martabak telor dan besar", price: 30000, img: "martabak.jpg"},
+      {name: "Ketan Durian", desc: "Campuran ketan susu kental manis dan durian", price: 25000, img: "ketan.jpg"},
+      {name: "Roti Sapik", desc: "Roti Sapik yang rasanya manis", price: 15000, img: "roti sapik.jpg"},
+    ];
+    
+    const minumanData = [
+      {name: "Teh Talua", desc: "Teh dengan telur dan susu", price: 10000, img: "teh talua.jpg"},
+      {name: "Teh Tawar", desc: "Teh tawar hangat", price: 2000, img: "teh.jpg"},
+      {name: "Kopi Susu", desc: "Kopi dengan susu", price: 12000, img: "kopi susu.jpg"},
+      {name: "Es Campur", desc: "Es campur dengan buah-buahan", price: 18000, img: "es campur.jpg"},
+      {name: "Es Doger", desc: "Minuman es dengan kelapa dan cincau", price: 16000, img: "es doger.jpg"},
+      {name: "Jus Alpukat", desc: "Jus alpukat segar", price: 20000, img: "jus alpukat.jpg"},
+      {name: "Jus Mangga", desc: "Jus mangga segar", price: 18000, img: "jus mangga.jpg"},
+      {name: "Jus Jambu", desc: "Jus jambu merah segar", price: 18000, img: "jus jambu.jpg"},
+      {name: "Es Jeruk", desc: "Es jeruk segar", price: 10000, img: "jus jeruk.jpg"},
+      {name: "Air aka", desc: "Minuman tradisional pakai santan", price: 25000, img: "air aka.jpg"},
+      {name: "Es Tebak", desc: "Es Tebak bewarna pink", price: 13000, img: "es tebak.jpg"},
+      {name: "Es Cendol", desc: "Cendol dengan santan dan gula merah", price: 14000, img: "es cendol.jpg"},
+      {name: "Kopi Talua", desc: "Campuran Kopi dengan telur", price: 15000, img: "kopi talua.jpg"},
+      {name: "Es Teler", desc: "Es campur dengan buah nangka", price: 20000, img: "es teler.jpg"},
+      {name: "Es Kelapa Muda", desc: "Air kelapa muda segar", price: 15000, img: "es kelapa.jpg"},
+      {name: "Jus Sirsak", desc: "Jus sirsak segar", price: 18000, img: "jus sirsak.jpg"},
+      {name: "Jus Semangka", desc: "Jus semangka segar", price: 16000, img: "jus semangka.jpg"},
+      {name: "Jus Nanas", desc: "Jus nanas segar", price: 16000, img: "jus nanas.jpg"},
+      {name: "Jus Wortel", desc: "Jus wortel segar", price: 17000, img: "jus wortel.jpg"},
+      {name: "Jus Tomat", desc: "Jus tomat segar", price: 15000, img: "jus tomat.jpg"},
+      {name: "Air Mineral", desc: "Air mineral kemasan", price: 5000, img: "air putih.jpg"},
+      {name: "Teh Botol", desc: "Teh botol dingin", price: 7000, img: "teh botol.jpg"},
+      {name: "Fanta", desc: "Fanta dingin", price: 8000, img: "fanta.jpg"},
+      {name: "Coca-Cola", desc: "Coca-Cola dingin", price: 8000, img: "coca cola.jpg"},
+      {name: "Sprite", desc: "Sprite dingin", price: 8000, img: "sprite.jpg"}
+    ];
+
+    // ============ UTILITY FUNCTIONS ============
+    function formatRupiah(angka) {
+      return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // ============ INITIALIZATION FUNCTIONS ============
+    function initializeApp() {
+      // Initialize sidebar toggle
+      toggleBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("hide");
+        mainContent.classList.toggle("full");
+      });
+
+      // Initialize page navigation
+      document.querySelectorAll(".sidebar ul li[data-page]").forEach(li => {
+        li.addEventListener("click", () => {
+          const target = li.getAttribute("data-page");
+          document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+          document.getElementById(target).classList.add("active");
+        });
+      });
+
+      // Initialize dark mode toggle
+      document.getElementById("darkModeToggle").addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+      });
+
+      // Initialize charts
+      initializeCharts();
+
+      // Initialize data displays
+      renderTerlaris();
+      renderAktivitas();
+      renderPesanan(5);
+      renderStatusMeja();
+      renderPesananComplete();
+      renderMakanan();
+      renderMinuman();
+      renderKeranjang();
+      renderPesananBaru();
+
+      // Initialize event listeners
+      initializeEventListeners();
+    }
+
+    function initializeCharts() {
+      // Penjualan Chart
+      const penjualanCtx = document.getElementById('penjualanChart').getContext('2d');
+      new Chart(penjualanCtx, {
+        type: 'line',
+        data: {
+          labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+          datasets: [{
+            label: 'Penjualan',
+            data: [12, 19, 15, 25, 22, 30, 28],
+            backgroundColor: 'rgba(128, 0, 0, 0.2)',
+            borderColor: '#800000',
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return 'Rp ' + value + 'jt';
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // Grafik Bulanan
+      const ctx = document.getElementById('grafikBulanan').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+          datasets: [{
+            label: 'Jumlah Pesanan',
+            data: [12, 19, 10, 15, 20, 17, 22, 18, 25, 30, 28, 35],
+            backgroundColor: '#800000'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      // Keuangan Chart
+      const keuanganCtx = document.getElementById('keuanganChart').getContext('2d');
+      new Chart(keuanganCtx, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+          datasets: [
+            {
+              label: 'Pemasukan',
+              data: [65000000, 72000000, 68000000, 75000000, 80000000, 85500000],
+              backgroundColor: 'rgba(46, 125, 50, 0.2)',
+              borderColor: '#2e7d32',
+              borderWidth: 2,
+              tension: 0.3,
+              fill: true
+            },
+            {
+              label: 'Pengeluaran',
+              data: [40000000, 42000000, 38000000, 43000000, 45000000, 42300000],
+              backgroundColor: 'rgba(211, 47, 47, 0.2)',
+              borderColor: '#d32f2f',
+              borderWidth: 2,
+              tension: 0.3,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  if (context.parsed.y !== null) {
+                    label += formatRupiah(context.parsed.y);
+                  }
+                  return label;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return formatRupiah(value);
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function initializeEventListeners() {
+      // Filter buttons for pesanan terakhir
+      document.getElementById("filterSemua").addEventListener("click", () => renderPesanan(10));
+      document.getElementById("filterLima").addEventListener("click", () => renderPesanan(5));
+
+      // Add to cart button
+      document.getElementById("btnTambahKeranjang")?.addEventListener("click", addToCart);
+
+      // Payment buttons
+      document.getElementById("btnBayar")?.addEventListener("click", openPaymentModal);
+      document.getElementById("btnBatal")?.addEventListener("click", cancelOrder);
+
+      // Modal close buttons
+      document.querySelector(".modal-close")?.addEventListener("click", closePaymentModal);
+      document.getElementById("btnBatalBayar")?.addEventListener("click", closePaymentModal);
+      document.getElementById("btnKonfirmasiBayar")?.addEventListener("click", confirmPayment);
+
+      // Struk buttons
+      document.getElementById("btnTutupStruk")?.addEventListener("click", closeStrukAndUpdateTable);
+      document.getElementById("btnCetakStruk")?.addEventListener("click", printStruk);
+
+      // Payment method selection
+      document.querySelectorAll(".payment-method").forEach(method => {
+        method.addEventListener("click", selectPaymentMethod);
+      });
+
+      // Menu tabs
+      document.querySelectorAll(".menu-tab").forEach(tab => {
+        tab.addEventListener("click", switchMenuTab);
+      });
+
+      // Menu search
+      document.getElementById("menuSearch")?.addEventListener("input", searchMenu);
+
+      // Notification bell
+      document.getElementById("notificationBell")?.addEventListener("click", toggleNotifications);
+
+      // Clear all notifications
+      document.getElementById("clearAllNotif")?.addEventListener("click", clearAllNotifications);
+
+      // Laporan periode filter
+      document.getElementById("periodeLaporan")?.addEventListener("change", changeLaporanPeriode);
+
+      // Pesanan resto filters
+      document.querySelectorAll(".pesanan-resto-filter").forEach(filter => {
+        filter.addEventListener("click", filterPesananResto);
+      });
+      
+      // Login form submission
+      loginForm.addEventListener("submit", handleLogin);
+      
+      // Logout button
+      logoutBtn.addEventListener("click", handleLogout);
+    }
+
+    // ============ LOGIN FUNCTIONS ============
+    function checkLoginStatus() {
+      // Check if user is logged in (in a real app, this would check a valid session)
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      
+      if (isLoggedIn) {
+        // Show main content
+        loginContainer.style.display = 'none';
+        sidebar.style.display = 'block';
+        mainContent.style.display = 'block';
+      } else {
+        // Show login form
+        loginContainer.style.display = 'flex';
+        sidebar.style.display = 'none';
+        mainContent.style.display = 'none';
+      }
+    }
+    
+    function handleLogin(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      // Check credentials (in a real app, this would be a server request)
+      if (username === 'khairul' && password === 'tes123') {
+        // Successful login
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('username', username);
+        
+        // Show main content
+        loginContainer.style.display = 'none';
+        sidebar.style.display = 'block';
+        mainContent.style.display = 'block';
+        
+        // Hide error message if it was shown
+        loginError.style.display = 'none';
+        
+        // Reset form
+        loginForm.reset();
+      } else {
+        // Failed login
+        loginError.style.display = 'block';
+      }
+    }
+    
+    function handleLogout() {
+      if (confirm('Apakah Anda yakin ingin logout?')) {
+        // Clear login status
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('username');
+        
+        // Show login form
+        loginContainer.style.display = 'flex';
+        sidebar.style.display = 'none';
+        mainContent.style.display = 'none';
+      }
+    }
+
+    // ============ RENDER FUNCTIONS ============
+    function renderTerlaris() {
+      const container = document.getElementById("menu-terlaris");
+      container.innerHTML = "";
+      
+      terlarisData.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "menu-item";
+        div.innerHTML = `
+          <img src="${item.img}" alt="${item.name}" /> 
+          <div class="menu-details">
+            <div class="menu-name">${item.name}</div>
+            <div class="menu-desc">${item.desc}</div>
+            <div class="menu-price">${formatRupiah(item.price)}</div>
+            <div class="menu-qty">Terjual: ${item.qty} porsi</div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderAktivitas() {
+      const container = document.getElementById("aktivitas-terkini");
+      container.innerHTML = "";
+      
+      aktivitasData.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "activity-item";
+        div.innerHTML = `
+          <div class="activity-icon">
+            <i class="fas ${item.icon}"></i>
+          </div>
+          <div class="activity-content">
+            <div class="activity-title">${item.title}</div>
+            <div class="activity-time">${item.time}</div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderPesanan(limit = 5) {
+      const container = document.getElementById("pesananTerakhir");
+      container.innerHTML = "";
+      
+      pesananData.slice(0, limit).forEach((p, index) => {
+        const div = document.createElement("div");
+        div.className = "pesanan-item";
+        div.innerHTML = `
+          <div class="pesanan-header">
+            <div class="nama">${p.nama}</div>
+            <div class="tanggal">${p.tanggal}</div>
+          </div>
+          <div class="pesanan-content">
+            <div class="menu">Pesanan: ${p.pesan}</div>
+            <div class="total">${formatRupiah(p.total)}</div>
+          </div>
+        `;
+        container.appendChild(div);
+        setTimeout(() => div.classList.add("show"), 100 * index);
+      });
+    }
+
+    function renderStatusMeja() {
+      const container = document.getElementById("statusMeja");
+      container.innerHTML = "";
+      
+      mejaData.forEach(meja => {
+        const div = document.createElement("div");
+        div.className = `meja-card ${meja.status}`;
+        
+        let icon, statusText, detailText;
+        
+        if (meja.status === "available") {
+          icon = "fa-chair";
+          statusText = "Kosong";
+          detailText = "Siap digunakan";
+        } else if (meja.status === "occupied") {
+          icon = "fa-user-friends";
+          statusText = "Terisi";
+          detailText = "Sedang digunakan";
+        } else {
+          icon = "fa-clock";
+          statusText = "Dipesan";
+          detailText = "Akan segera datang";
+        }
+        
+        div.innerHTML = `
+          <div class="meja-icon">
+            <i class="fas ${icon}"></i>
+          </div>
+          <div class="meja-number">Meja ${meja.nomor}</div>
+          <div class="meja-status">${statusText}</div>
+          <div class="meja-detail">${detailText}</div>
+        `;
+        
+        container.appendChild(div);
+      });
+      
+      document.getElementById("totalMeja").innerText = mejaData.length;
+    }
+
+    function renderPesananComplete() {
+      const tbody = document.getElementById("pesananCompleteTable");
+      tbody.innerHTML = "";
+      
+      pesananCompleteData.forEach(p => {
+        const tr = document.createElement("tr");
+        const paidClass = (p.bayar.toLowerCase().startsWith('s')) ? 'yes' : 'no';
+        tr.innerHTML = `
+          <td>${p.nama}</td>
+          <td>${p.menu}</td>
+          <td>${formatRupiah(p.total)}</td>
+          <td style="text-align:center"><span class="badge-paid ${paidClass}">${p.bayar}</span></td>
+          <td style="text-align:center"><span class="metode-chip">${p.metode}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      
+      document.getElementById("pesananCompleteCount").innerText = pesananCompleteData.length;
+      const processCount = pesananHariIniData.filter(x => x.status.toLowerCase().includes('process')).length;
+      document.getElementById("pesananProcessCount").innerText = processCount;
+    }
+
+    function renderMakanan() {
+      const container = document.getElementById("makanan-grid");
+      container.innerHTML = "";
+      
+      makananData.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "menu-card";
+        div.innerHTML = `
+          <div class="menu-card-image">
+            <img src="${item.img}" alt="${item.name}">
+            <div class="menu-badge">Populer</div>
+          </div>
+          <div class="menu-card-content">
+            <div class="menu-card-name">${item.name}</div>
+            <div class="menu-card-desc">${item.desc}</div>
+            <div class="menu-card-footer">
+              <div class="menu-card-price">${formatRupiah(item.price)}</div>
+              <button class="menu-card-action" onclick="addToCartFromMenu('${item.name}', ${item.price})">Pesan</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderMinuman() {
+      const container = document.getElementById("minuman-grid");
+      container.innerHTML = "";
+      
+      minumanData.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "menu-card";
+        div.innerHTML = `
+          <div class="menu-card-image">
+            <img src="${item.img}" alt="${item.name}">
+            <div class="menu-badge">Segar</div>
+          </div>
+          <div class="menu-card-content">
+            <div class="menu-card-name">${item.name}</div>
+            <div class="menu-card-desc">${item.desc}</div>
+            <div class="menu-card-footer">
+              <div class="menu-card-price">${formatRupiah(item.price)}</div>
+              <button class="menu-card-action" onclick="addToCartFromMenu('${item.name}', ${item.price})">Pesan</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderKeranjang() {
+      const container = document.getElementById("keranjang-items");
+      const summaryContainer = document.getElementById("cart-summary");
+      const totalElement = document.getElementById("total-bayar");
+      
+      if (keranjang.length === 0) {
+        container.innerHTML = `
+          <div class="cart-empty">
+            <i class="fas fa-shopping-cart"></i>
+            <p>Keranjang belanja kosong</p>
+          </div>
+        `;
+        summaryContainer.style.display = "none";
+        return;
+      }
+      
+      container.innerHTML = "";
+      let total = 0;
+      
+      keranjang.forEach((item, index) => {
+        total += item.subtotal;
+        
+        const div = document.createElement("div");
+        div.className = "keranjang-item";
+        div.innerHTML = `
+          <div>
+            <div style="font-weight: 600;">${item.menu}</div>
+            <div style="font-size: 14px; color: #666;">${item.qty} x ${formatRupiah(item.harga)}</div>
+          </div>
+          <div>
+            <div class="cart-quantity-control">
+              <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">
+                <i class="fas fa-minus"></i>
+              </button>
+              <span class="quantity-value">${item.qty}</span>
+              <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+            <div style="font-weight: 700; margin-top: 8px;">${formatRupiah(item.subtotal)}</div>
+            <button class="btn" style="padding: 4px 8px; margin-top: 5px; background: #f5f5f5;" onclick="removeFromKeranjang(${index})">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+      
+      totalElement.textContent = formatRupiah(total);
+      summaryContainer.style.display = "block";
+    }
+
+    function renderPesananBaru() {
+      const tbody = document.getElementById("pesananBaruTable");
+      if (tbody) {
+        tbody.innerHTML = "";
+        
+        if (pesananBaruData.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 20px; color: #777;">
+                Belum ada pesanan baru
+              </td>
+            </tr>
+          `;
+          return;
+        }
+        
+        pesananBaruData.forEach(p => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${p.nama}</td>
+            <td>${p.menu}</td>
+            <td>${p.meja}</td>
+            <td>${formatRupiah(p.total)}</td>
+            <td>${p.metode}</td>
+            <td><span class="badge-paid yes">${p.status}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    // ============ TABLE MANAGEMENT FUNCTIONS ============
+    function updateTableStatus(tableNumber, newStatus) {
+      // Find the table in the data array
+      const tableIndex = mejaData.findIndex(table => table.nomor === tableNumber);
+      
+      if (tableIndex !== -1) {
+        // Update the table status
+        mejaData[tableIndex].status = newStatus;
+        
+        // Re-render the table status display
+        renderStatusMeja();
+        
+        // Show notification
+        const statusText = newStatus === "occupied" ? "Terisi" : "Kosong";
+        addNotification("Status Meja Diperbarui", `Meja ${tableNumber} sekarang ${statusText}`, "info");
+        
+        return true;
+      }
+      
+      return false;
+    }
+
+    // ============ EVENT HANDLER FUNCTIONS ============
+    function addToCart() {
+      const nama = document.getElementById("inputNamaPelanggan")?.value.trim();
+      const menu = document.getElementById("inputMenu")?.value;
+      const meja = document.getElementById("inputMeja")?.value;
+      const qty = parseInt(document.getElementById("inputQty")?.value) || 1;
+      
+      if (!nama || !menu || !meja) {
+        alert("Harap lengkapi semua kolom!");
+        return;
+      }
+      
+      const harga = menuData[menu];
+      const subtotal = harga * qty;
+      
+      // Check if item with same name and menu already exists in cart
+      const existingItemIndex = keranjang.findIndex(item => 
+        item.nama === nama && item.menu === menu
+      );
+      
+      if (existingItemIndex !== -1) {
+        // Update quantity if item already exists
+        keranjang[existingItemIndex].qty += qty;
+        keranjang[existingItemIndex].subtotal = keranjang[existingItemIndex].harga * keranjang[existingItemIndex].qty;
+      } else {
+        // Add new item if not exists
+        keranjang.push({
+          nama,
+          menu,
+          meja,
+          qty,
+          harga,
+          subtotal
+        });
+      }
+      
+      // Reset form
+      if (document.getElementById("inputMenu")) {
+        document.getElementById("inputMenu").value = "";
+        document.getElementById("inputQty").value = "1";
+      }
+      
+      // Update cart display
+      renderKeranjang();
+    }
+    
+    // Add function to add item from menu page
+    function addToCartFromMenu(menuName, price) {
+      const nama = document.getElementById("inputNamaPelanggan")?.value.trim();
+      const meja = document.getElementById("inputMeja")?.value;
+      
+      if (!nama || !meja) {
+        alert("Harap isi nama pelanggan dan nomor meja terlebih dahulu!");
+        return;
+      }
+      
+      // Check if item already exists in cart
+      const existingItemIndex = keranjang.findIndex(item => 
+        item.nama === nama && item.menu === menuName
+      );
+      
+      if (existingItemIndex !== -1) {
+        // Update quantity if item already exists
+        keranjang[existingItemIndex].qty += 1;
+        keranjang[existingItemIndex].subtotal = keranjang[existingItemIndex].harga * keranjang[existingItemIndex].qty;
+      } else {
+        // Add new item if not exists
+        keranjang.push({
+          nama,
+          menu: menuName,
+          meja,
+          qty: 1,
+          harga: price,
+          subtotal: price
+        });
+      }
+      
+      // Update cart display
+      renderKeranjang();
+      
+      // Show notification
+      addNotification("Item Ditambahkan", `${menuName} telah ditambahkan ke keranjang`, "success");
+    }
+    
+    // Update quantity function
+    function updateQuantity(index, change) {
+      const newQty = keranjang[index].qty + change;
+      
+      if (newQty <= 0) {
+        removeFromKeranjang(index);
+        return;
+      }
+      
+      keranjang[index].qty = newQty;
+      keranjang[index].subtotal = keranjang[index].harga * newQty;
+      
+      renderKeranjang();
+    }
+
+    function removeFromKeranjang(index) {
+      keranjang.splice(index, 1);
+      renderKeranjang();
+    }
+
+    function cancelOrder() {
+      if (confirm("Apakah Anda yakin ingin membatalkan pesanan?")) {
+        keranjang.length = 0;
+        renderKeranjang();
+      }
+    }
+
+    function openPaymentModal() {
+      const nama = document.getElementById("inputNamaPelanggan")?.value.trim();
+      const meja = document.getElementById("inputMeja")?.value;
+      
+      if (!nama || !meja) {
+        alert("Harap isi nama pelanggan dan nomor meja terlebih dahulu!");
+        return;
+      }
+      
+      if (keranjang.length === 0) {
+        alert("Keranjang belanja kosong!");
+        return;
+      }
+      
+      // Store the table number for later use
+      currentTableNumber = parseInt(meja);
+      
+      const modal = document.getElementById("modalPembayaran");
+      modal.style.display = "flex";
+      selectedPaymentMethod = '';
+      
+      document.querySelectorAll(".payment-method").forEach(el => {
+        el.classList.remove("selected");
+      });
+      
+      document.getElementById("pembayaran-detail").style.display = "none";
+      document.getElementById("ewallet-detail").style.display = "none";
+      document.getElementById("mbanking-detail").style.display = "none";
+      document.getElementById("qris-detail").style.display = "none";
+      
+      document.getElementById("btnKonfirmasiBayar").disabled = true;
+    }
+
+    function closePaymentModal() {
+      document.getElementById("modalPembayaran").style.display = "none";
+    }
+
+    function selectPaymentMethod() {
+      document.querySelectorAll(".payment-method").forEach(el => {
+        el.classList.remove("selected");
+      });
+      
+      this.classList.add("selected");
+      selectedPaymentMethod = this.getAttribute("data-method");
+      
+      // Show payment details
+      const total = keranjang.reduce((sum, item) => sum + item.subtotal, 0);
+      document.getElementById("modal-total-bayar").textContent = formatRupiah(total);
+      document.getElementById("pembayaran-detail").style.display = "block";
+      
+      // Hide all payment details
+      document.getElementById("ewallet-detail").style.display = "none";
+      document.getElementById("mbanking-detail").style.display = "none";
+      document.getElementById("qris-detail").style.display = "none";
+      
+      // Show specific payment details based on method
+      if (selectedPaymentMethod === "E-wallet") {
+        document.getElementById("ewallet-detail").style.display = "block";
+      } else if (selectedPaymentMethod === "M-Banking") {
+        document.getElementById("mbanking-detail").style.display = "block";
+      } else if (selectedPaymentMethod === "QRIS") {
+        document.getElementById("qris-detail").style.display = "block";
+        document.getElementById("qris-amount").textContent = formatRupiah(total);
+        
+        // Reset and start timer for QRIS
+        clearInterval(window.qrisTimer);
+        let timeLeft = 300; // 5 minutes in seconds
+        document.getElementById("qris-timer").textContent = `Waktu tersisa: ${formatTime(timeLeft)}`;
+        document.getElementById("qris-status").className = "qris-status waiting";
+        document.getElementById("qris-status").textContent = "Menunggu pembayaran...";
+        
+        window.qrisTimer = setInterval(() => {
+          timeLeft--;
+          document.getElementById("qris-timer").textContent = `Waktu tersisa: ${formatTime(timeLeft)}`;
+          
+          if (timeLeft <= 0) {
+            clearInterval(window.qrisTimer);
+            document.getElementById("qris-status").className = "qris-status waiting";
+            document.getElementById("qris-status").textContent = "Kode QRIS kedaluwarsa. Silakan pilih metode pembayaran lain.";
+          }
+        }, 1000);
+      }
+      
+      document.getElementById("btnKonfirmasiBayar").disabled = false;
+    }
+
+    function confirmPayment() {
+      if (!selectedPaymentMethod) {
+        alert("Pilih metode pembayaran terlebih dahulu!");
+        return;
+      }
+      
+      // Validate additional input for E-wallet and M-Banking
+      if (selectedPaymentMethod === "E-wallet") {
+        const ewalletNumber = document.getElementById("ewallet-number")?.value.trim();
+        if (!ewalletNumber) {
+          alert("Harap masukkan nomor E-wallet!");
+          return;
+        }
+      } else if (selectedPaymentMethod === "M-Banking") {
+        const mbankingNumber = document.getElementById("mbanking-number")?.value.trim();
+        if (!mbankingNumber) {
+          alert("Harap masukkan nomor rekening M-Banking!");
+          return;
+        }
+      }
+      
+      // Process payment
+      const total = keranjang.reduce((sum, item) => sum + item.subtotal, 0);
+      const nama = keranjang[0].nama;
+      const meja = keranjang[0].meja;
+      
+      // Combine ordered menus
+      const menuList = keranjang.map(item => `${item.menu} (${item.qty})`).join(", ");
+      
+      // Add to order data
+      pesananBaruData.push({
+        nama,
+        menu: menuList,
+        meja,
+        total,
+        metode: selectedPaymentMethod,
+        status: "Diproses"
+      });
+      
+      // Update order table
+      renderPesananBaru();
+      
+      // Show payment receipt
+      showStruk(nama, meja, keranjang, total, selectedPaymentMethod);
+      
+      // Show notification
+      addNotification("Pembayaran Berhasil", `Pesanan dari ${nama} telah dibayar dengan ${selectedPaymentMethod}`, "success");
+      
+      // Reset cart and close modal
+      keranjang.length = 0;
+      renderKeranjang();
+      closePaymentModal();
+    }
+
+    function showStruk(nama, meja, items, total, metode) {
+      // Set receipt date
+      const now = new Date();
+      const tanggal = now.toLocaleDateString('id-ID');
+      const waktu = now.toLocaleTimeString('id-ID');
+      
+      document.getElementById("struk-tanggal").textContent = `${tanggal} ${waktu}`;
+      document.getElementById("struk-pelanggan").textContent = nama;
+      document.getElementById("struk-meja").textContent = meja;
+      document.getElementById("struk-metode").textContent = metode;
+      
+      // Generate receipt number
+      const noStruk = `TRX-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
+      document.getElementById("struk-no").textContent = `#${noStruk}`;
+      
+      // Calculate service and tax
+      const service = Math.round(total * 0.05);
+      const pajak = Math.round(total * 0.1);
+      const grandTotal = total + service + pajak;
+      
+      document.getElementById("struk-subtotal").textContent = formatRupiah(total);
+      document.getElementById("struk-service").textContent = formatRupiah(service);
+      document.getElementById("struk-pajak").textContent = formatRupiah(pajak);
+      document.getElementById("struk-grand-total").textContent = formatRupiah(grandTotal);
+      
+      // Show item details
+      const container = document.getElementById("struk-detail-items");
+      container.innerHTML = "";
+      
+      items.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "struk-item";
+        div.innerHTML = `
+          <div class="struk-item-name">${item.menu}</div>
+          <div class="struk-item-qty">${item.qty}</div>
+          <div class="struk-item-price">${formatRupiah(item.harga)}</div>
+        `;
+        container.appendChild(div);
+      });
+      
+      // Show modal receipt
+      document.getElementById("modalStruk").style.display = "flex";
+    }
+
+    function closeStrukAndUpdateTable() {
+      // Close the receipt modal
+      document.getElementById("modalStruk").style.display = "none";
+      
+      // Update table status if we have a table number
+      if (currentTableNumber) {
+        updateTableStatus(currentTableNumber, "occupied");
+        
+        // Show success notification
+        showSuccessNotification(`Meja ${currentTableNumber} berhasil dipesan!`);
+        
+        // Reset form
+        if (document.getElementById("inputNamaPelanggan")) {
+          document.getElementById("inputNamaPelanggan").value = "";
+          document.getElementById("inputMeja").value = "";
+        }
+        
+        // Reset current table number
+        currentTableNumber = null;
+      }
+    }
+
+    function showSuccessNotification(message) {
+      const notification = document.createElement("div");
+      notification.className = "success-notification";
+      notification.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <span>${message}</span>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Remove notification after animation completes
+      setTimeout(() => {
+        if (document.body.contains(notification)) {
+          document.body.removeChild(notification);
+        }
+      }, 3000);
+    }
+
+    function printStruk() {
+      alert("Struk sedang dicetak...");
+      // Simulate printing receipt
+      setTimeout(() => {
+        alert("Struk berhasil dicetak!");
+      }, 1500);
+    }
+
+    function switchMenuTab() {
+      // Remove active class from all tabs
+      document.querySelectorAll(".menu-tab").forEach(t => {
+        t.classList.remove("active");
+      });
+      
+      // Add active class to clicked tab
+      this.classList.add("active");
+      
+      // Hide all content sections
+      document.querySelectorAll(".menu-content-section").forEach(content => {
+        content.style.display = "none";
+      });
+      
+      // Show selected content
+      const tabName = this.getAttribute("data-tab");
+      const contentSection = document.getElementById(`${tabName}-content`);
+      if (contentSection) {
+        contentSection.style.display = "block";
+      }
+    }
+
+    function searchMenu() {
+      const searchTerm = this.value.toLowerCase();
+      const activeTab = document.querySelector(".menu-tab.active").getAttribute("data-tab");
+      const items = activeTab === "makanan" ? makananData : minumanData;
+      const container = document.getElementById(`${activeTab}-grid`);
+      
+      container.innerHTML = "";
+      
+      const filteredItems = items.filter(item => 
+        item.name.toLowerCase().includes(searchTerm) || 
+        item.desc.toLowerCase().includes(searchTerm)
+      );
+      
+      if (filteredItems.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #777;">
+            <i class="fas fa-search" style="font-size: 48px; margin-bottom: 15px; color: #ddd;"></i>
+            <p>Tidak ada menu yang ditemukan</p>
+          </div>
+        `;
+        return;
+      }
+      
+      filteredItems.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "menu-card";
+        div.innerHTML = `
+          <div class="menu-card-image">
+            <img src="${item.img}" alt="${item.name}">
+            <div class="menu-badge">${activeTab === "makanan" ? "Populer" : "Segar"}</div>
+          </div>
+          <div class="menu-card-content">
+            <div class="menu-card-name">${item.name}</div>
+            <div class="menu-card-desc">${item.desc}</div>
+            <div class="menu-card-footer">
+              <div class="menu-card-price">${formatRupiah(item.price)}</div>
+              <button class="menu-card-action" onclick="addToCartFromMenu('${item.name}', ${item.price})">Pesan</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function toggleNotifications(e) {
+      e.stopPropagation();
+      const dropdown = document.getElementById("notificationDropdown");
+      dropdown.classList.toggle("active");
+      renderNotifications();
+    }
+
+    function renderNotifications() {
+      const notificationList = document.getElementById("notificationList");
+      notificationList.innerHTML = "";
+      
+      if (notifications.length === 0) {
+        notificationList.innerHTML = `
+          <div style="padding: 20px; text-align: center; color: #777;">
+            <i class="fas fa-bell-slash" style="font-size: 32px; margin-bottom: 10px; color: #ddd;"></i>
+            <p>Belum ada notifikasi</p>
+          </div>
+        `;
+        return;
+      }
+      
+      notifications.slice(0, 5).forEach((notif, index) => {
+        const div = document.createElement("div");
+        div.className = `notification-item ${notif.read ? '' : 'unread'}`;
+        div.innerHTML = `
+          <div class="notification-icon">
+            <i class="fas ${getNotificationIcon(notif.type)}"></i>
+          </div>
+          <div class="notification-content">
+            <div class="notification-title">${notif.title}</div>
+            <div class="notification-message">${notif.message}</div>
+            <div class="notification-time">${getTimeAgo(notif.timestamp)}</div>
+          </div>
+          <div class="notification-close" data-index="${index}">
+            <i class="fas fa-times"></i>
+          </div>
+        `;
+        notificationList.appendChild(div);
+      });
+      
+      // Add event listeners to close buttons
+      document.querySelectorAll(".notification-close").forEach(btn => {
+        btn.addEventListener("click", function() {
+          const index = parseInt(this.getAttribute("data-index"));
+          removeNotification(index);
+        });
+      });
+    }
+
+    function getNotificationIcon(type) {
+      const icons = {
+        'success': 'fa-check-circle',
+        'info': 'fa-info-circle',
+        'warning': 'fa-exclamation-circle',
+        'error': 'fa-times-circle',
+        'order': 'fa-shopping-cart',
+        'payment': 'fa-credit-card',
+        'default': 'fa-bell'
+      };
+      return icons[type] || icons.default;
+    }
+
+    function getTimeAgo(timestamp) {
+      const now = new Date();
+      const diff = Math.floor((now - timestamp) / 1000); // in seconds
+      
+      if (diff < 60) return "Baru saja";
+      if (diff < 3600) return `${Math.floor(diff / 60)} menit yang lalu`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)} jam yang lalu`;
+      return `${Math.floor(diff / 86400)} hari yang lalu`;
+    }
+
+    function addNotification(title, message, type = 'info') {
+      const notification = {
+        id: Date.now(),
+        title,
+        message,
+        type,
+        timestamp: new Date(),
+        read: false
+      };
+      
+      notifications.unshift(notification);
+      if (notifications.length > 20) {
+        notifications = notifications.slice(0, 20);
+      }
+      
+      renderNotifications();
+      updateNotificationCount();
+      
+      // Show notification toast
+      showNotificationToast(title, message, type);
+    }
+
+    function removeNotification(index) {
+      notifications.splice(index, 1);
+      renderNotifications();
+      updateNotificationCount();
+    }
+
+    function updateNotificationCount() {
+      const unreadCount = notifications.filter(n => !n.read).length;
+      const countElement = document.getElementById("notificationCount");
+      countElement.textContent = unreadCount;
+      countElement.style.display = unreadCount > 0 ? "flex" : "none";
+    }
+
+    function showNotificationToast(title, message, type) {
+      const toast = document.createElement("div");
+      toast.className = "notification-toast";
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        border-left: 4px solid ${getNotificationColor(type)};
+        padding: 15px 20px;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        max-width: 350px;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+      `;
+      
+      toast.innerHTML = `
+        <div style="display: flex; align-items: flex-start;">
+          <i class="fas ${getNotificationIcon(type)}" style="color: ${getNotificationColor(type)}; margin-right: 12px; font-size: 18px; margin-top: 2px;"></i>
+          <div>
+            <div style="font-weight: 600; margin-bottom: 4px;">${title}</div>
+            <div style="font-size: 14px; color: #555;">${message}</div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(toast);
+      
+      // Animate in
+      setTimeout(() => {
+        toast.style.transform = "translateX(0)";
+      }, 10);
+      
+      // Animate out and remove
+      setTimeout(() => {
+        toast.style.transform = "translateX(400px)";
+        setTimeout(() => {
+          document.body.removeChild(toast);
+        }, 300);
+      }, 3000);
+    }
+
+    function getNotificationColor(type) {
+      const colors = {
+        'success': '#2e7d32',
+        'info': '#0288d1',
+        'warning': '#ffa000',
+        'error': '#d32f2f',
+        'order': '#800000',
+        'payment': '#2e7d32',
+        'default': '#0288d1'
+      };
+      return colors[type] || colors.default;
+    }
+
+    function clearAllNotifications() {
+      if (confirm("Hapus semua notifikasi?")) {
+        notifications = [];
+        renderNotifications();
+        updateNotificationCount();
+      }
+    }
+
+    function changeLaporanPeriode() {
+      const periode = this.value;
+      
+      // Simulate loading different data based on periode
+      const keuanganChart = Chart.getChart("keuanganChart");
+      
+      if (periode === "harian") {
+        keuanganChart.data.labels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+        keuanganChart.data.datasets[0].data = [2850000, 3200000, 2950000, 3100000, 3400000, 3600000, 3300000];
+        keuanganChart.data.datasets[1].data = [1500000, 850000, 1200000, 5000000, 1200000, 950000, 1100000];
+      } else if (periode === "mingguan") {
+        keuanganChart.data.labels = ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'];
+        keuanganChart.data.datasets[0].data = [19500000, 21000000, 22500000, 22500000];
+        keuanganChart.data.datasets[1].data = [9500000, 10500000, 11000000, 11300000];
+      } else if (periode === "bulanan") {
+        keuanganChart.data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'];
+        keuanganChart.data.datasets[0].data = [65000000, 72000000, 68000000, 75000000, 80000000, 85500000];
+        keuanganChart.data.datasets[1].data = [40000000, 42000000, 38000000, 43000000, 45000000, 42300000];
+      } else if (periode === "tahunan") {
+        keuanganChart.data.labels = ['2020', '2021', '2022', '2023', '2024', '2025'];
+        keuanganChart.data.datasets[0].data = [450000000, 520000000, 610000000, 720000000, 850000000, 513000000];
+        keuanganChart.data.datasets[1].data = [280000000, 310000000, 350000000, 420000000, 480000000, 253800000];
+      }
+      
+      keuanganChart.update();
+    }
+
+    function filterPesananResto() {
+      // Remove active class from all filters
+      document.querySelectorAll(".pesanan-resto-filter").forEach(f => {
+        f.classList.remove("active");
+      });
+      
+      // Add active class to clicked filter
+      this.classList.add("active");
+      
+      // Filter table rows based on status
+      const filterValue = this.textContent.toLowerCase();
+      const rows = document.querySelectorAll("#pesananRestoTable tr");
+      
+      rows.forEach(row => {
+        const statusCell = row.querySelector(".status-badge");
+        if (statusCell) {
+          const status = statusCell.textContent.toLowerCase();
+          if (filterValue === "semua" || status.includes(filterValue)) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        }
+      });
+    }
+
+    // ============ INITIALIZATION ============
+    document.addEventListener("DOMContentLoaded", function() {
+      // Check login status first
+      checkLoginStatus();
+      
+      // Initialize the app
+      initializeApp();
+      
+      // Close notification dropdown when clicking outside
+      document.addEventListener("click", function(e) {
+        const notificationDropdown = document.getElementById("notificationDropdown");
+        const notificationBell = document.getElementById("notificationBell");
+        
+        if (!notificationBell.contains(e.target) && !notificationDropdown.contains(e.target)) {
+          notificationDropdown.classList.remove("active");
+        }
+      });
+      
+      // Simulate receiving notifications
+      setInterval(() => {
+        const randomNotif = [
+          {title: "Pesanan Baru", message: "Pesanan Rendang telah diterima", type: "order"},
+          {title: "Stok Bahan Baku", message: "Beras hampir habis, segera pesan!", type: "warning"},
+          {title: "Pesanan Baru", message: "Pesanan Ayam Pop telah diterima", type: "order"},
+          {title: "Pembayaran Berhasil", message: "Pembayaran selesai #INV-00123", type: "payment"},
+          {title: "Pengingat", message: "Cek laporan harian hari ini", type: "info"}
+        ];
+        
+        const notif = randomNotif[Math.floor(Math.random() * randomNotif.length)];
+        addNotification(notif.title, notif.message, notif.type);
+      }, 15000);
+    });
+  </script>
+</body>
+</html>
